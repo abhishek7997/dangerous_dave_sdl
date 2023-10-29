@@ -51,8 +51,8 @@ public:
             {
                 tiles[i][j].x = i * m_TileWidth + m_LineWidth;
                 tiles[i][j].y = j * m_TileHeight + m_LineWidth;
-                tiles[i][j].w = m_TileWidth;
-                tiles[i][j].h = m_TileHeight;
+                tiles[i][j].w = m_TileWidth - m_LineWidth;
+                tiles[i][j].h = m_TileHeight - m_LineWidth;
             }
         }
     }
@@ -71,18 +71,17 @@ public:
     }
     ~TileData()
     {
-        IMG_Quit();
         SDL_FreeSurface(m_Tilemap);
     }
 
 private:
-    const std::string m_TilemapPath = "D:\\Dev\\GameProgramming\\dangerous_dave_sdl\\assets\\tilemap.png";
+    const std::string m_TilemapPath = "D:\\Dev\\GameProgramming\\dangerous_dave_sdl\\assets\\tilemap_grid.png";
     SDL_Surface *m_Tilemap;
     SDL_Texture *m_TilemapTexture;
     const int m_LineWidth = 2;
     const int m_TileHeight = 18;
     const int m_TileWidth = 18;
-    const int m_TilemapWidth = 110;
-    const int m_TilemapHeight = 145;
+    const int m_TilemapWidth = 145;
+    const int m_TilemapHeight = 110;
     SDL_Rect tiles[8][6];
 };
