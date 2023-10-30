@@ -1,4 +1,4 @@
-enum TileTypes
+typedef enum
 {
     EMPTY,
     WALL,
@@ -7,4 +7,4 @@ enum TileTypes
     POINT_200,
     POINT_400,
     POINT_800
-};
+} TileTypes;

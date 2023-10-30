@@ -1,49 +1,62 @@
 #include <iostream>
 #include <SDL.h>
-#include <Tile.hpp>
+#include "Tile.hpp"
+#include "Level.hpp"
+#include "SDLApp.hpp"
 
-#define WIDTH 640
-#define HEIGHT 480
+SDLApp *app;
+LevelData *levelData;
+TileData *tileData;
+
+void HandleRendering()
+{
+    levelData->RenderLevelData(app->GetRenderer(), tileData);
+}
+
+void HandleUpdate()
+{
+    for (int i = 0; i < 3; i++)
+    {
+        int x = rand() % 26;
+        int y = rand() % 35;
+        int id = rand() % 48;
+
+        levelData->SetLevelDataTile(x, y, id);
+    }
+}
+
+void HandleEvents()
+{
+    SDL_Event event;
+    while (SDL_PollEvent(&event))
+    {
+        switch (event.type)
+        {
+        case SDL_QUIT:
+            app->Stop();
+            break;
+
+        default:
+            break;
+        }
+    }
+}
 
 int main(int argc, char *argv[])
 {
-    if (SDL_Init(SDL_INIT_VIDEO) < 0)
-    {
-        std::cout << "Could not initialize SDL: " << SDL_GetError() << std::endl;
-        return -1;
-    }
-    SDL_Window *window = SDL_CreateWindow("DD_SDL", 20, 20, WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
+    app = new SDLApp();
+    levelData = new LevelData();
+    tileData = new TileData(app->GetRenderer());
+    tileData->LoadTiles();
 
-    if (!window)
-    {
-        std::cout << "Cound not create window: " << SDL_GetError() << std::endl;
-        return -1;
-    }
+    app->SetEventCallback(HandleEvents);
+    app->SetUpdateCallback(HandleUpdate);
+    app->SetRenderCallback(HandleRendering);
+    app->Run();
 
-    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    TileData *tileData = new TileData();
+    delete tileData;
+    delete levelData;
+    delete app;
 
-    SDL_Surface *tilemap = tileData->LoadTilemap();
-    SDL_Texture *tilemaptexture = SDL_CreateTextureFromSurface(renderer, tilemap);
-    SDL_Rect rect;
-    rect.x = 10;
-    rect.y = 10;
-    rect.w = 110;
-    rect.h = 145;
-
-    SDL_Event event;
-    while (true)
-    {
-        SDL_RenderCopy(renderer, tilemaptexture, NULL, &rect);
-        SDL_RenderDrawRect(renderer, &rect);
-        SDL_RenderPresent(renderer);
-        if (SDL_PollEvent(&event) && event.type == SDL_QUIT)
-            break;
-    }
-
-    // SDL_Delay(5000);
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
     return 0;
 }
