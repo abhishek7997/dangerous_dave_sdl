@@ -6,20 +6,25 @@
 
 SDLApp *app;
 LevelData *levelData;
-TileData *tileData;
+TileManager *tileManager;
 
 void HandleRendering()
 {
-    levelData->RenderLevelData(app->GetRenderer(), tileData);
+    levelData->RenderLevelData(app->GetRenderer(), tileManager);
 }
 
 void HandleUpdate()
 {
+    int k = 144;
     for (int i = 0; i < 20; i++)
     {
-        int x = rand() % 26;
-        int y = rand() % 35;
-        int id = rand() % 48;
+        int x = rand() % 28;
+        int y = rand() % 36;
+        int id = k;
+
+        k++;
+        if (k == 148)
+            k = 144;
 
         levelData->SetLevelDataTile(x, y, id);
     }
@@ -35,7 +40,9 @@ void HandleEvents()
         case SDL_QUIT:
             app->Stop();
             break;
-
+        case SDL_KEYDOWN:
+            std::cout << "Key pressed" << std::endl;
+            break;
         default:
             break;
         }
@@ -46,15 +53,15 @@ int main(int argc, char *argv[])
 {
     app = new SDLApp();
     levelData = new LevelData();
-    tileData = new TileData(app->GetRenderer());
-    tileData->LoadTiles();
+    tileManager = new TileManager();
+    tileManager->LoadTiles(app->GetRenderer());
 
     app->SetEventCallback(HandleEvents);
     app->SetUpdateCallback(HandleUpdate);
     app->SetRenderCallback(HandleRendering);
     app->Run();
 
-    delete tileData;
+    delete tileManager;
     delete levelData;
     delete app;
 

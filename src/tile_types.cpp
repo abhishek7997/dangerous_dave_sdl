@@ -18,7 +18,7 @@ enum GameObject
     PIPE_RIGHT = 15,
     PIPE_DOWN = 16,
     WALL_RED = 17,
-    WALL_MUD = 18,
+    WALL_MUD_2 = 18,
     WALL_LIGHT_BLUE = 19,
     GUN = 20,
     WALL_HALF_1 = 21,
@@ -103,6 +103,9 @@ enum PlayerObject
     PLAYER_JETPACK_L_1_XOR = 85,
     PLAYER_JETPACK_L_2_XOR = 86,
     PLAYER_JETPACK_L_3_XOR = 87,
+
+    PLAYER_BULLET_R = 126,
+    PLAYER_BULLET_L = 127
 };
 
 enum EnemyObject
@@ -154,4 +157,12 @@ enum EnemyObject
     DISC_VERT_2 = 117,
     DISC_VERT_3 = 118,
     DISC_VERT_4 = 119,
+
+    ENEMY_BULLET_R_1 = 120,
+    ENEMY_BULLET_R_2 = 121,
+    ENEMY_BULLET_R_3 = 122,
+
+    ENEMY_BULLET_L_1 = 123,
+    ENEMY_BULLET_L_2 = 124,
+    ENEMY_BULLET_L_3 = 125,
 };

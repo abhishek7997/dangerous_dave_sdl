@@ -2,6 +2,7 @@
 #include <functional>
 #include <SDL.h>
 #include <SDL_image.h>
+#include "GameState.hpp"
 
 class SDLApp
 {
@@ -24,6 +25,9 @@ public:
             std::cout << "Could not initialize SDL_Image: " << SDL_GetError() << std::endl;
             return -1;
         }
+
+        gameState = new GameState();
+
         window = SDL_CreateWindow("DD_SDL", 20, 20, m_WindowWidth, m_WindowHeight, SDL_WINDOW_SHOWN);
         renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
         return 0;
@@ -83,6 +87,11 @@ public:
         SDL_Quit();
     }
 
+    SDL_bool isColliding(SDL_Rect *a, SDL_Rect *b)
+    {
+        return SDL_HasIntersection(a, b);
+    }
+
 private:
     bool isRunning = true;
     const int m_WindowWidth = 640;
@@ -93,4 +102,5 @@ private:
     std::function<void(void)> m_EventCallback = []() {};
     std::function<void(void)> m_UpdateCallback = []() {};
     std::function<void(void)> m_RenderCallback = []() {};
+    GameState *gameState;
 };
