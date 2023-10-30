@@ -13,7 +13,6 @@ public:
         {
             std::cout << "Could not initialize SDL_Image: " << SDL_GetError() << std::endl;
         }
-        m_Tilemap = IMG_Load(m_TilemapPath.c_str());
     }
     TileData(SDL_Renderer *renderer)
     {
