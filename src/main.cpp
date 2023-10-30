@@ -18,12 +18,12 @@ void HandleUpdate()
     int k = 144;
     for (int i = 0; i < 20; i++)
     {
-        int x = rand() % 28;
-        int y = rand() % 36;
+        int x = rand() % levelData->getLevelHeight();
+        int y = rand() % levelData->getLevelWidth();
         int id = k;
 
         k++;
-        if (k == 148)
+        if (k == 147)
             k = 144;
 
         levelData->SetLevelDataTile(x, y, id);
@@ -39,9 +39,6 @@ void HandleEvents()
         {
         case SDL_QUIT:
             app->Stop();
-            break;
-        case SDL_KEYDOWN:
-            std::cout << "Key pressed" << std::endl;
             break;
         default:
             break;

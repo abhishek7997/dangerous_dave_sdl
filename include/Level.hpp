@@ -14,21 +14,21 @@ public:
     LevelData()
     {
         srand(time(NULL));
-        m_LevelData = vector<vector<int>>(m_LevelWidth, vector<int>(m_LevelHeight, 0));
-        for (int i = 0; i < m_LevelWidth; i++)
+        m_LevelData = vector<vector<int>>(m_LevelHeight, vector<int>(m_LevelWidth, 0));
+        for (int i = 0; i < m_LevelHeight; i++)
         {
-            for (int j = 0; j < m_LevelHeight; j++)
+            for (int j = 0; j < m_LevelWidth; j++)
             {
                 m_LevelData[i][j] = rand() % 125;
             }
         }
 
-        for (int i = 0; i < m_LevelWidth; i++)
+        for (int i = 0; i < m_LevelHeight; i++)
         {
-            for (int j = 0; j < m_LevelHeight; j++)
+            for (int j = 0; j < m_LevelWidth; j++)
             {
-                m_Level[i][j].x = i * m_TileWidth;
-                m_Level[i][j].y = j * m_TileHeight;
+                m_Level[i][j].x = j * m_TileWidth;
+                m_Level[i][j].y = i * m_TileHeight;
                 m_Level[i][j].w = m_TileWidth;
                 m_Level[i][j].h = m_TileHeight;
             }
@@ -37,9 +37,9 @@ public:
 
     void RenderLevelData(SDL_Renderer *renderer, TileManager *const tileData)
     {
-        for (int i = 0; i < m_LevelWidth; i++)
+        for (int i = 0; i < m_LevelHeight; i++)
         {
-            for (int j = 0; j < m_LevelHeight; j++)
+            for (int j = 0; j < m_LevelWidth; j++)
             {
                 SDL_Texture *texture = tileData->GetTileById(m_LevelData[i][j]);
                 int w, h;
@@ -62,13 +62,23 @@ public:
         m_LevelData[x][y] = id;
     }
 
+    const int getLevelWidth()
+    {
+        return m_LevelWidth;
+    }
+
+    const int getLevelHeight()
+    {
+        return m_LevelHeight;
+    }
+
 private:
-    const int m_LevelWidth = 35;  // 468/18
-    const int m_LevelHeight = 26; // 630/18
+    const int m_LevelWidth = 20;  // 468/18
+    const int m_LevelHeight = 10; // 630/18
     const int m_TileWidth = 16;
     const int m_TileHeight = 16;
     // const int m_LevelWidth = 26;  // 468/18
     // const int m_LevelHeight = 35; // 630/18
     vector<vector<int>> m_LevelData;
-    SDL_Rect m_Level[35][26];
+    SDL_Rect m_Level[10][20];
 };

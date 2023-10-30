@@ -31,6 +31,9 @@ public:
         // implement player jump
     }
 
+    // A level is 20 tiles by 10 tiles (in the viewport/camera)
+    // height = 20*16 = 320px
+    // width = 10*16 = 160px
 private:
     const int playerWidth = 20;
     const int playerHeight = 16;

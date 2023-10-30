@@ -30,6 +30,7 @@ public:
 
         window = SDL_CreateWindow("DD_SDL", 20, 20, m_WindowWidth, m_WindowHeight, SDL_WINDOW_SHOWN);
         renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+        SDL_RenderSetScale(renderer, 3, 3);
         return 0;
     }
 
@@ -54,8 +55,8 @@ public:
         while (isRunning)
         {
             starttime = SDL_GetTicks();
-            m_EventCallback();
             SDL_RenderClear(renderer);
+            m_EventCallback();
             m_UpdateCallback();
             m_RenderCallback();
             SDL_RenderPresent(renderer);
@@ -81,6 +82,7 @@ public:
 
     ~SDLApp()
     {
+        delete gameState;
         IMG_Quit();
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
@@ -94,7 +96,7 @@ public:
 
 private:
     bool isRunning = true;
-    const int m_WindowWidth = 640;
+    const int m_WindowWidth = 960;
     const int m_WindowHeight = 480;
     const int m_MaxFrameRate = 60;
     SDL_Window *window = nullptr;
