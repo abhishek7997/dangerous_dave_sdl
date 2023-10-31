@@ -166,3 +166,36 @@ enum EnemyObject
     ENEMY_BULLET_L_2 = 124,
     ENEMY_BULLET_L_3 = 125,
 };
+
+enum MiscObject
+{
+    DEATH_1 = 128,
+    DEATH_2 = 129,
+    DEATH_3 = 130,
+    DEATH_4 = 131,
+    TEXT_JETPACK = 132,
+    TEXT_GUN = 133,
+    TEXT_LIVES = 134, // DAVES:
+    TEXT_LEVEL = 135,
+    TEXT_SCORE = 136,
+    TEXT_CANEXIT = 137,
+    TEXT_WARP = 138,
+    TEXT_ZONE = 139,
+    JETPACK_METER = 140,
+    JETPACK_UNIT = 141,
+    LIFE_UNIT = 142,
+    BANNER_1 = 143,
+    BANNER_2 = 144,
+    BANNER_3 = 145,
+    BANNER_4 = 146,
+    DIGIT_ZERO = 147,
+    DIGIT_ONE = 148,
+    DIGIT_TWO = 149,
+    DIGIT_THREE = 150,
+    DIGIT_FOUR = 151,
+    DIGIT_FIVE = 152,
+    DIGIT_SIX = 153,
+    DIGIT_SEVEN = 154,
+    DIGIT_EIGHT = 155,
+    DIGIT_NINE = 156
+};

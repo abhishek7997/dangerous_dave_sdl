@@ -15,16 +15,16 @@ void HandleRendering()
 
 void HandleUpdate()
 {
-    int k = 144;
+    int k = 147;
     for (int i = 0; i < 20; i++)
     {
-        int x = rand() % levelData->getLevelHeight();
-        int y = rand() % levelData->getLevelWidth();
-        int id = k;
+        int x = 0; // rand() % levelData->getLevelHeight();
+        int y = 0; // rand() % levelData->getLevelWidth();
+        int id = 147;
 
         k++;
-        if (k == 147)
-            k = 144;
+        if (k >= 156)
+            k = 147;
 
         levelData->SetLevelDataTile(x, y, id);
     }

@@ -30,6 +30,7 @@ public:
 
         window = SDL_CreateWindow("DD_SDL", 20, 20, m_WindowWidth, m_WindowHeight, SDL_WINDOW_SHOWN);
         renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+
         SDL_RenderSetScale(renderer, 3, 3);
         return 0;
     }
@@ -55,18 +56,19 @@ public:
         while (isRunning)
         {
             starttime = SDL_GetTicks();
+
+            SDL_SetRenderDrawColor(renderer, 16, 32, 64, SDL_ALPHA_OPAQUE);
             SDL_RenderClear(renderer);
             m_EventCallback();
             m_UpdateCallback();
             m_RenderCallback();
             SDL_RenderPresent(renderer);
+
             endtime = SDL_GetTicks();
 
             deltatime = endtime - starttime;
             if (deltatime <= (1000 / m_MaxFrameRate))
-            {
                 SDL_Delay((1000 / m_MaxFrameRate) - deltatime);
-            }
         }
     }
 

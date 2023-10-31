@@ -45,13 +45,12 @@ public:
                 int w, h;
                 if (SDL_QueryTexture(texture, NULL, NULL, &w, &h) < 0)
                 {
-                    SDL_Log("Failed to query texture: %s", SDL_GetError());
+                    // SDL_Log("Failed to query texture: %s", SDL_GetError());
+                    continue;
                 }
-                else
-                {
-                    m_Level[i][j].h = h;
-                    m_Level[i][j].w = w;
-                }
+
+                m_Level[i][j].h = h;
+                m_Level[i][j].w = w;
                 SDL_RenderCopy(renderer, texture, NULL, &m_Level[i][j]);
             }
         }

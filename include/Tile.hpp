@@ -18,7 +18,7 @@ public:
         tiles = std::vector<SDL_Texture *>(158);
     }
 
-    void LoadGameObjects(SDL_Renderer *renderer, SDL_Texture *source, int &tile)
+    void LoadGameObjects(SDL_Renderer *renderer, SDL_Texture *source, int &tile, Uint32 pixelFormat)
     {
         const int tileWidth = 16;
         const int tileHeight = 16;
@@ -35,7 +35,8 @@ public:
                 rect.w = tileWidth;
                 rect.h = tileHeight;
 
-                tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+                tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+                SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
                 SDL_SetRenderTarget(renderer, tiles[tile++]);
                 SDL_RenderCopy(renderer, source, &rect, NULL);
             }
@@ -50,13 +51,14 @@ public:
             rect.w = tileWidth;
             rect.h = tileHeight;
 
-            tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+            tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+            SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
             SDL_SetRenderTarget(renderer, tiles[tile++]);
             SDL_RenderCopy(renderer, source, &rect, NULL);
         }
     }
 
-    void LoadPlayerObjects(SDL_Renderer *renderer, SDL_Texture *source, int &tile)
+    void LoadPlayerObjects(SDL_Renderer *renderer, SDL_Texture *source, int &tile, Uint32 pixelFormat)
     {
         int tileWidth = 20;
         int tileHeight = 16;
@@ -74,7 +76,8 @@ public:
             rect.w = tileWidth;
             rect.h = tileHeight;
 
-            tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+            tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+            SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
             SDL_SetRenderTarget(renderer, tiles[tile++]);
             SDL_RenderCopy(renderer, source, &rect, NULL);
         }
@@ -91,7 +94,8 @@ public:
                 rect.w = tileWidth;
                 rect.h = tileHeight;
 
-                tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+                tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+                SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
                 SDL_SetRenderTarget(renderer, tiles[tile++]);
                 SDL_RenderCopy(renderer, source, &rect, NULL);
             }
@@ -104,12 +108,13 @@ public:
         rect.y = startY;
         rect.w = tileWidth;
         rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
         SDL_SetRenderTarget(renderer, tiles[tile++]);
         SDL_RenderCopy(renderer, source, &rect, NULL);
     }
 
-    void LoadMonsterObjects(SDL_Renderer *renderer, SDL_Texture *source, int &tile)
+    void LoadMonsterObjects(SDL_Renderer *renderer, SDL_Texture *source, int &tile, Uint32 pixelFormat)
     {
         int tileWidth = 28;
         int tileHeight = 20;
@@ -125,7 +130,8 @@ public:
             rect.y = startY;
             rect.w = tileWidth;
             rect.h = tileHeight;
-            tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+            tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+            SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
             SDL_SetRenderTarget(renderer, tiles[tile++]);
             SDL_RenderCopy(renderer, source, &rect, NULL);
         }
@@ -141,7 +147,8 @@ public:
             rect.y = startY;
             rect.w = tileWidth;
             rect.h = tileHeight;
-            tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+            tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+            SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
             SDL_SetRenderTarget(renderer, tiles[tile++]);
             SDL_RenderCopy(renderer, source, &rect, NULL);
         }
@@ -153,7 +160,8 @@ public:
         rect.y = startY;
         rect.w = tileWidth;
         rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
         SDL_SetRenderTarget(renderer, tiles[tile++]);
         SDL_RenderCopy(renderer, source, &rect, NULL);
 
@@ -168,7 +176,8 @@ public:
             rect.y = startY;
             rect.w = tileWidth;
             rect.h = tileHeight;
-            tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+            tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+            SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
             SDL_SetRenderTarget(renderer, tiles[tile++]);
             SDL_RenderCopy(renderer, source, &rect, NULL);
         }
@@ -184,7 +193,8 @@ public:
             rect.y = startY;
             rect.w = tileWidth;
             rect.h = tileHeight;
-            tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+            tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+            SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
             SDL_SetRenderTarget(renderer, tiles[tile++]);
             SDL_RenderCopy(renderer, source, &rect, NULL);
         }
@@ -196,7 +206,8 @@ public:
         rect.y = startY;
         rect.w = tileWidth;
         rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
         SDL_SetRenderTarget(renderer, tiles[tile++]);
         SDL_RenderCopy(renderer, source, &rect, NULL);
 
@@ -211,7 +222,8 @@ public:
             rect.y = startY;
             rect.w = tileWidth;
             rect.h = tileHeight;
-            tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+            tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+            SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
             SDL_SetRenderTarget(renderer, tiles[tile++]);
             SDL_RenderCopy(renderer, source, &rect, NULL);
         }
@@ -227,7 +239,8 @@ public:
             rect.y = startY;
             rect.w = tileWidth;
             rect.h = tileHeight;
-            tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+            tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+            SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
             SDL_SetRenderTarget(renderer, tiles[tile++]);
             SDL_RenderCopy(renderer, source, &rect, NULL);
         }
@@ -239,7 +252,8 @@ public:
         rect.y = startY;
         rect.w = tileWidth;
         rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
         SDL_SetRenderTarget(renderer, tiles[tile++]);
         SDL_RenderCopy(renderer, source, &rect, NULL);
 
@@ -254,7 +268,8 @@ public:
             rect.y = startY;
             rect.w = tileWidth;
             rect.h = tileHeight;
-            tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+            tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+            SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
             SDL_SetRenderTarget(renderer, tiles[tile++]);
             SDL_RenderCopy(renderer, source, &rect, NULL);
         }
@@ -270,7 +285,8 @@ public:
             rect.y = startY;
             rect.w = tileWidth;
             rect.h = tileHeight;
-            tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+            tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+            SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
             SDL_SetRenderTarget(renderer, tiles[tile++]);
             SDL_RenderCopy(renderer, source, &rect, NULL);
         }
@@ -282,7 +298,8 @@ public:
         rect.y = startY;
         rect.w = tileWidth;
         rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
         SDL_SetRenderTarget(renderer, tiles[tile++]);
         SDL_RenderCopy(renderer, source, &rect, NULL);
 
@@ -297,7 +314,8 @@ public:
             rect.y = startY;
             rect.w = tileWidth;
             rect.h = tileHeight;
-            tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+            tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+            SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
             SDL_SetRenderTarget(renderer, tiles[tile++]);
             SDL_RenderCopy(renderer, source, &rect, NULL);
         }
@@ -311,13 +329,14 @@ public:
             rect.y = startY;
             rect.w = tileWidth;
             rect.h = tileHeight;
-            tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+            tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+            SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
             SDL_SetRenderTarget(renderer, tiles[tile++]);
             SDL_RenderCopy(renderer, source, &rect, NULL);
         }
     }
 
-    void LoadMiscObjects(SDL_Renderer *renderer, SDL_Texture *source, int &tile)
+    void LoadMiscObjects(SDL_Renderer *renderer, SDL_Texture *source, int &tile, Uint32 pixelFormat)
     {
         // Load player bullet (right)
         int tileWidth = 12;
@@ -331,7 +350,8 @@ public:
         rect.y = startY;
         rect.w = tileWidth;
         rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
         SDL_SetRenderTarget(renderer, tiles[tile++]);
         SDL_RenderCopy(renderer, source, &rect, NULL);
 
@@ -342,7 +362,8 @@ public:
         rect.y = startY;
         rect.w = tileWidth;
         rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
         SDL_SetRenderTarget(renderer, tiles[tile++]);
         SDL_RenderCopy(renderer, source, &rect, NULL);
 
@@ -357,7 +378,8 @@ public:
             rect.y = startY;
             rect.w = tileWidth;
             rect.h = tileHeight;
-            tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+            tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+            SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
             SDL_SetRenderTarget(renderer, tiles[tile++]);
             SDL_RenderCopy(renderer, source, &rect, NULL);
         }
@@ -371,7 +393,8 @@ public:
         rect.y = startY;
         rect.w = tileWidth;
         rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
         SDL_SetRenderTarget(renderer, tiles[tile++]);
         SDL_RenderCopy(renderer, source, &rect, NULL);
 
@@ -384,7 +407,8 @@ public:
         rect.y = startY;
         rect.w = tileWidth;
         rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
         SDL_SetRenderTarget(renderer, tiles[tile++]);
         SDL_RenderCopy(renderer, source, &rect, NULL);
 
@@ -397,7 +421,8 @@ public:
         rect.y = startY;
         rect.w = tileWidth;
         rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
         SDL_SetRenderTarget(renderer, tiles[tile++]);
         SDL_RenderCopy(renderer, source, &rect, NULL);
 
@@ -410,7 +435,8 @@ public:
         rect.y = startY;
         rect.w = tileWidth;
         rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
         SDL_SetRenderTarget(renderer, tiles[tile++]);
         SDL_RenderCopy(renderer, source, &rect, NULL);
 
@@ -423,7 +449,8 @@ public:
         rect.y = startY;
         rect.w = tileWidth;
         rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
         SDL_SetRenderTarget(renderer, tiles[tile++]);
         SDL_RenderCopy(renderer, source, &rect, NULL);
 
@@ -437,7 +464,8 @@ public:
         rect.y = startY;
         rect.w = tileWidth;
         rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
         SDL_SetRenderTarget(renderer, tiles[tile++]);
         SDL_RenderCopy(renderer, source, &rect, NULL);
 
@@ -450,7 +478,8 @@ public:
         rect.y = startY;
         rect.w = tileWidth;
         rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
         SDL_SetRenderTarget(renderer, tiles[tile++]);
         SDL_RenderCopy(renderer, source, &rect, NULL);
 
@@ -463,7 +492,8 @@ public:
         rect.y = startY;
         rect.w = tileWidth;
         rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
         SDL_SetRenderTarget(renderer, tiles[tile++]);
         SDL_RenderCopy(renderer, source, &rect, NULL);
 
@@ -476,7 +506,8 @@ public:
         rect.y = startY;
         rect.w = tileWidth;
         rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
         SDL_SetRenderTarget(renderer, tiles[tile++]);
         SDL_RenderCopy(renderer, source, &rect, NULL);
 
@@ -489,7 +520,8 @@ public:
         rect.y = startY;
         rect.w = tileWidth;
         rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
         SDL_SetRenderTarget(renderer, tiles[tile++]);
         SDL_RenderCopy(renderer, source, &rect, NULL);
 
@@ -502,7 +534,8 @@ public:
         rect.y = startY;
         rect.w = tileWidth;
         rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
         SDL_SetRenderTarget(renderer, tiles[tile++]);
         SDL_RenderCopy(renderer, source, &rect, NULL);
 
@@ -517,7 +550,8 @@ public:
             rect.y = startY;
             rect.w = tileWidth;
             rect.h = tileHeight;
-            tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+            tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+            SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
             SDL_SetRenderTarget(renderer, tiles[tile++]);
             SDL_RenderCopy(renderer, source, &rect, NULL);
         }
@@ -533,7 +567,8 @@ public:
             rect.y = startY;
             rect.w = tileWidth;
             rect.h = tileHeight;
-            tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+            tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+            SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
             SDL_SetRenderTarget(renderer, tiles[tile++]);
             SDL_RenderCopy(renderer, source, &rect, NULL);
         }
@@ -549,7 +584,8 @@ public:
             rect.y = startY;
             rect.w = tileWidth;
             rect.h = tileHeight;
-            tiles[tile] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+            tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
+            SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
             SDL_SetRenderTarget(renderer, tiles[tile++]);
             SDL_RenderCopy(renderer, source, &rect, NULL);
         }
@@ -557,13 +593,42 @@ public:
 
     void LoadTiles(SDL_Renderer *renderer)
     {
-        SDL_Surface *surface = IMG_Load(m_TilemapPath.c_str());
+        SDL_Surface *surface = SDL_LoadBMP(m_TilemapPath.c_str());
+        // SDL_Surface *surface = SDL_ConvertSurfaceFormat(one, SDL_PIXELFORMAT_RGBA32, 0);
         if (!surface)
         {
             std::cout << "Tilemap not loaded" << std::endl;
             return;
         }
+
+        SDL_PixelFormat *pixelFormat = surface->format;
+        std::cout << pixelFormat->format << std::endl;
+        const char *formatName = SDL_GetPixelFormatName(pixelFormat->format);
+        printf("Pixel format name: %s\n", formatName);
+
+        if (SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(pixelFormat, 0x00, 0x00, 0x00)) < 0)
+        {
+            std::cout << "Could not set color key: " << SDL_GetError() << std::endl;
+        }
+
+        Uint32 key;
+        Uint8 r = -1, g = -1, b = -1, a = -1;
+        if (SDL_GetColorKey(surface, &key) == 0)
+        {
+            SDL_GetRGB(key, surface->format, &r, &g, &b);
+            std::cout << key << ' ' << r << ' ' << g << ' ' << b << ' ' << std::endl;
+            if (!r || !g || !b || !a)
+            {
+                std::cout << "The color key is not set correctly" << SDL_GetError() << std::endl;
+            }
+        }
+        else
+        {
+            std::cout << "Could not get Color key" << SDL_GetError() << std::endl;
+        }
+
         SDL_Texture *m_TilemapTexture = SDL_CreateTextureFromSurface(renderer, surface);
+
         SDL_FreeSurface(surface);
 
         if (!m_TilemapTexture)
@@ -574,10 +639,10 @@ public:
 
         int tile = 0;
 
-        LoadGameObjects(renderer, m_TilemapTexture, tile);
-        LoadPlayerObjects(renderer, m_TilemapTexture, tile);
-        LoadMonsterObjects(renderer, m_TilemapTexture, tile);
-        LoadMiscObjects(renderer, m_TilemapTexture, tile);
+        LoadGameObjects(renderer, m_TilemapTexture, tile, pixelFormat->format);
+        LoadPlayerObjects(renderer, m_TilemapTexture, tile, pixelFormat->format);
+        LoadMonsterObjects(renderer, m_TilemapTexture, tile, pixelFormat->format);
+        LoadMiscObjects(renderer, m_TilemapTexture, tile, pixelFormat->format);
 
         SDL_SetRenderTarget(renderer, NULL);
 
@@ -597,7 +662,7 @@ public:
     }
 
 private:
-    const std::string m_TilemapPath = "D:\\Dev\\GameProgramming\\dangerous_dave_sdl\\assets\\dd_tilesheet.png";
+    const std::string m_TilemapPath = "D:\\Dev\\GameProgramming\\dangerous_dave_sdl\\assets\\dd_tilesheet.bmp";
     const int m_TilemapWidth = 145;
     const int m_TilemapHeight = 110;
     std::vector<SDL_Texture *> tiles;
