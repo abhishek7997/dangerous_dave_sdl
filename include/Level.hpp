@@ -19,7 +19,7 @@ public:
         {
             for (int j = 0; j < m_LevelWidth; j++)
             {
-                m_LevelData[i][j] = rand() % 125;
+                m_LevelData[i][j] = 0;
             }
         }
 
@@ -45,7 +45,7 @@ public:
                 int w, h;
                 if (SDL_QueryTexture(texture, NULL, NULL, &w, &h) < 0)
                 {
-                    // SDL_Log("Failed to query texture: %s", SDL_GetError());
+                    SDL_Log("Failed to query texture: %s", SDL_GetError());
                     continue;
                 }
 
@@ -56,7 +56,7 @@ public:
         }
     }
 
-    void SetLevelDataTile(const int x, const int y, int id)
+    void SetLevelDataTile(const int &x, const int &y, int &id)
     {
         m_LevelData[x][y] = id;
     }

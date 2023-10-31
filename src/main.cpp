@@ -13,21 +13,15 @@ void HandleRendering()
     levelData->RenderLevelData(app->GetRenderer(), tileManager);
 }
 
+int k = 0;
+
 void HandleUpdate()
 {
-    int k = 147;
-    for (int i = 0; i < 20; i++)
-    {
-        int x = 0; // rand() % levelData->getLevelHeight();
-        int y = 0; // rand() % levelData->getLevelWidth();
-        int id = 147;
-
-        k++;
-        if (k >= 156)
-            k = 147;
-
-        levelData->SetLevelDataTile(x, y, id);
-    }
+    int x = 0; // rand() % levelData->getLevelHeight();
+    int y = 0; // rand() % levelData->getLevelWidth();
+    int id = k;
+    // std::cout << "ID: " << id << std::endl;
+    levelData->SetLevelDataTile(x, y, id);
 }
 
 void HandleEvents()
@@ -40,6 +34,23 @@ void HandleEvents()
         case SDL_QUIT:
             app->Stop();
             break;
+        case SDL_KEYDOWN:
+            switch (event.key.keysym.sym)
+            {
+            case SDLK_RIGHT:
+                k++;
+                if (k > 157)
+                    k = 0;
+                break;
+            case SDLK_LEFT:
+                k--;
+                if (k < 0)
+                    k = 157;
+                break;
+            default:
+                break;
+            }
+            // std::cout << "Current tile id: " << k << std::endl;
         default:
             break;
         }

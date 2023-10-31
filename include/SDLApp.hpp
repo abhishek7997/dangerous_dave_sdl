@@ -100,7 +100,7 @@ private:
     bool isRunning = true;
     const int m_WindowWidth = 960;
     const int m_WindowHeight = 480;
-    const int m_MaxFrameRate = 60;
+    const int m_MaxFrameRate = 24;
     SDL_Window *window = nullptr;
     SDL_Renderer *renderer = nullptr;
     std::function<void(void)> m_EventCallback = []() {};

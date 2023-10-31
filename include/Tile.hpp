@@ -18,6 +18,20 @@ public:
         tiles = std::vector<SDL_Texture *>(158);
     }
 
+    void CopyTexture(SDL_Renderer *renderer, SDL_Texture *source, Uint32 &pixelFormat, const int &x, const int &y, const int &w, const int &h, int &tile)
+    {
+        SDL_Rect rect;
+        rect.x = x;
+        rect.y = y;
+        rect.w = w;
+        rect.h = h;
+
+        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, w, h);
+        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
+        SDL_SetRenderTarget(renderer, tiles[tile++]);
+        SDL_RenderCopy(renderer, source, &rect, NULL);
+    }
+
     void LoadGameObjects(SDL_Renderer *renderer, SDL_Texture *source, int &tile, Uint32 pixelFormat)
     {
         const int tileWidth = 16;
@@ -30,15 +44,7 @@ public:
         {
             for (j = 0; j < 8; j++)
             {
-                rect.x = j * tileWidth;
-                rect.y = i * tileHeight;
-                rect.w = tileWidth;
-                rect.h = tileHeight;
-
-                tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-                SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-                SDL_SetRenderTarget(renderer, tiles[tile++]);
-                SDL_RenderCopy(renderer, source, &rect, NULL);
+                CopyTexture(renderer, source, pixelFormat, j * tileWidth, i * tileHeight, tileWidth, tileHeight, tile);
             }
         }
 
@@ -51,11 +57,9 @@ public:
             rect.w = tileWidth;
             rect.h = tileHeight;
 
-            tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-            SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-            SDL_SetRenderTarget(renderer, tiles[tile++]);
-            SDL_RenderCopy(renderer, source, &rect, NULL);
+            CopyTexture(renderer, source, pixelFormat, j * tileWidth, i * tileHeight, tileWidth, tileHeight, tile);
         }
+        std::cout << "Tile count for LoadGameObjects: " << tile << std::endl;
     }
 
     void LoadPlayerObjects(SDL_Renderer *renderer, SDL_Texture *source, int &tile, Uint32 pixelFormat)
@@ -71,15 +75,7 @@ public:
         // Load some player objects
         for (j = 0; j < 3; j++)
         {
-            rect.x = startX + j * tileWidth;
-            rect.y = startY;
-            rect.w = tileWidth;
-            rect.h = tileHeight;
-
-            tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-            SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-            SDL_SetRenderTarget(renderer, tiles[tile++]);
-            SDL_RenderCopy(renderer, source, &rect, NULL);
+            CopyTexture(renderer, source, pixelFormat, startX + j * tileWidth, startY, tileWidth, tileHeight, tile);
         }
 
         // Load remaining player objects
@@ -89,29 +85,15 @@ public:
         {
             for (j = 0; j < 8; j++)
             {
-                rect.x = startX + j * tileWidth;
-                rect.y = startY + i * tileHeight;
-                rect.w = tileWidth;
-                rect.h = tileHeight;
-
-                tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-                SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-                SDL_SetRenderTarget(renderer, tiles[tile++]);
-                SDL_RenderCopy(renderer, source, &rect, NULL);
+                CopyTexture(renderer, source, pixelFormat, startX + j * tileWidth, startY + i * tileHeight, tileWidth, tileHeight, tile);
             }
         }
 
         startX = 0;
         startY = 176;
         // Load last player object
-        rect.x = startX;
-        rect.y = startY;
-        rect.w = tileWidth;
-        rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-        SDL_SetRenderTarget(renderer, tiles[tile++]);
-        SDL_RenderCopy(renderer, source, &rect, NULL);
+        CopyTexture(renderer, source, pixelFormat, startX, startY, tileWidth, tileHeight, tile);
+        std::cout << "Tile count for LoadPlayerObjects: " << tile << std::endl;
     }
 
     void LoadMonsterObjects(SDL_Renderer *renderer, SDL_Texture *source, int &tile, Uint32 pixelFormat)
@@ -126,14 +108,7 @@ public:
         // Load monster objects (spider)
         for (j = 0; j < 4; j++)
         {
-            rect.x = startX + j * tileWidth;
-            rect.y = startY;
-            rect.w = tileWidth;
-            rect.h = tileHeight;
-            tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-            SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-            SDL_SetRenderTarget(renderer, tiles[tile++]);
-            SDL_RenderCopy(renderer, source, &rect, NULL);
+            CopyTexture(renderer, source, pixelFormat, startX + j * tileWidth, startY, tileWidth, tileHeight, tile);
         }
 
         // Load monster objects (Blade; first 3)
@@ -143,27 +118,12 @@ public:
         startY = 176;
         for (j = 0; j < 3; j++)
         {
-            rect.x = startX + j * tileWidth;
-            rect.y = startY;
-            rect.w = tileWidth;
-            rect.h = tileHeight;
-            tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-            SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-            SDL_SetRenderTarget(renderer, tiles[tile++]);
-            SDL_RenderCopy(renderer, source, &rect, NULL);
+            CopyTexture(renderer, source, pixelFormat, startX + j * tileWidth, startY, tileWidth, tileHeight, tile);
         }
 
         startX = 0;
         startY = 196;
-        // Load last monster object (blade)
-        rect.x = startX;
-        rect.y = startY;
-        rect.w = tileWidth;
-        rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-        SDL_SetRenderTarget(renderer, tiles[tile++]);
-        SDL_RenderCopy(renderer, source, &rect, NULL);
+        CopyTexture(renderer, source, pixelFormat, startX, startY, tileWidth, tileHeight, tile);
 
         // Load monster objects (Red sun; all 4)
         tileWidth = 24;
@@ -172,14 +132,7 @@ public:
         startY = 196;
         for (j = 0; j < 4; j++)
         {
-            rect.x = startX + j * tileWidth;
-            rect.y = startY;
-            rect.w = tileWidth;
-            rect.h = tileHeight;
-            tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-            SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-            SDL_SetRenderTarget(renderer, tiles[tile++]);
-            SDL_RenderCopy(renderer, source, &rect, NULL);
+            CopyTexture(renderer, source, pixelFormat, startX + j * tileWidth, startY, tileWidth, tileHeight, tile);
         }
 
         // Load monster objects (Green stick; first 3)
@@ -189,27 +142,13 @@ public:
         startY = 196;
         for (j = 0; j < 3; j++)
         {
-            rect.x = startX + j * tileWidth;
-            rect.y = startY;
-            rect.w = tileWidth;
-            rect.h = tileHeight;
-            tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-            SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-            SDL_SetRenderTarget(renderer, tiles[tile++]);
-            SDL_RenderCopy(renderer, source, &rect, NULL);
+            CopyTexture(renderer, source, pixelFormat, startX + j * tileWidth, startY, tileWidth, tileHeight, tile);
         }
 
         // Load last monster object (green stick)
         startX = 0;
         startY = 218;
-        rect.x = startX;
-        rect.y = startY;
-        rect.w = tileWidth;
-        rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-        SDL_SetRenderTarget(renderer, tiles[tile++]);
-        SDL_RenderCopy(renderer, source, &rect, NULL);
+        CopyTexture(renderer, source, pixelFormat, startX, startY, tileWidth, tileHeight, tile);
 
         // Load monster objects (UFO; all 4)
         tileWidth = 18;
@@ -218,14 +157,7 @@ public:
         startY = 218;
         for (j = 0; j < 4; j++)
         {
-            rect.x = startX + j * tileWidth;
-            rect.y = startY;
-            rect.w = tileWidth;
-            rect.h = tileHeight;
-            tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-            SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-            SDL_SetRenderTarget(renderer, tiles[tile++]);
-            SDL_RenderCopy(renderer, source, &rect, NULL);
+            CopyTexture(renderer, source, pixelFormat, startX + j * tileWidth, startY, tileWidth, tileHeight, tile);
         }
 
         // Load monster objects (Brown thing; first 3)
@@ -235,27 +167,13 @@ public:
         startY = 218;
         for (j = 0; j < 3; j++)
         {
-            rect.x = startX + j * tileWidth;
-            rect.y = startY;
-            rect.w = tileWidth;
-            rect.h = tileHeight;
-            tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-            SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-            SDL_SetRenderTarget(renderer, tiles[tile++]);
-            SDL_RenderCopy(renderer, source, &rect, NULL);
+            CopyTexture(renderer, source, pixelFormat, startX + j * tileWidth, startY, tileWidth, tileHeight, tile);
         }
 
         // Load last monster object (brown thing)
         startX = 0;
         startY = 240;
-        rect.x = startX;
-        rect.y = startY;
-        rect.w = tileWidth;
-        rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-        SDL_SetRenderTarget(renderer, tiles[tile++]);
-        SDL_RenderCopy(renderer, source, &rect, NULL);
+        CopyTexture(renderer, source, pixelFormat, startX, startY, tileWidth, tileHeight, tile);
 
         // Load monster objects (Green balls; all 4)
         tileWidth = 16;
@@ -264,14 +182,7 @@ public:
         startY = 240;
         for (j = 0; j < 4; j++)
         {
-            rect.x = startX + j * tileWidth;
-            rect.y = startY;
-            rect.w = tileWidth;
-            rect.h = tileHeight;
-            tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-            SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-            SDL_SetRenderTarget(renderer, tiles[tile++]);
-            SDL_RenderCopy(renderer, source, &rect, NULL);
+            CopyTexture(renderer, source, pixelFormat, startX + j * tileWidth, startY, tileWidth, tileHeight, tile);
         }
 
         // Load monster objects (vertical disc; first 3)
@@ -281,27 +192,13 @@ public:
         startY = 240;
         for (j = 0; j < 3; j++)
         {
-            rect.x = startX + j * tileWidth;
-            rect.y = startY;
-            rect.w = tileWidth;
-            rect.h = tileHeight;
-            tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-            SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-            SDL_SetRenderTarget(renderer, tiles[tile++]);
-            SDL_RenderCopy(renderer, source, &rect, NULL);
+            CopyTexture(renderer, source, pixelFormat, startX + j * tileWidth, startY, tileWidth, tileHeight, tile);
         }
 
         // Load last monster object (vertical disc)
         startX = 0;
         startY = 260;
-        rect.x = startX;
-        rect.y = startY;
-        rect.w = tileWidth;
-        rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-        SDL_SetRenderTarget(renderer, tiles[tile++]);
-        SDL_RenderCopy(renderer, source, &rect, NULL);
+        CopyTexture(renderer, source, pixelFormat, startX, startY, tileWidth, tileHeight, tile);
 
         // Load three enemy bullets (right)
         tileWidth = 20;
@@ -310,14 +207,7 @@ public:
         startY = 260;
         for (j = 0; j < 3; j++)
         {
-            rect.x = startX + j * tileWidth;
-            rect.y = startY;
-            rect.w = tileWidth;
-            rect.h = tileHeight;
-            tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-            SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-            SDL_SetRenderTarget(renderer, tiles[tile++]);
-            SDL_RenderCopy(renderer, source, &rect, NULL);
+            CopyTexture(renderer, source, pixelFormat, startX + j * tileWidth, startY, tileWidth, tileHeight, tile);
         }
 
         // Load three enemy bullets (left)
@@ -325,15 +215,9 @@ public:
         startY = 260;
         for (j = 0; j < 3; j++)
         {
-            rect.x = startX + j * tileWidth;
-            rect.y = startY;
-            rect.w = tileWidth;
-            rect.h = tileHeight;
-            tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-            SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-            SDL_SetRenderTarget(renderer, tiles[tile++]);
-            SDL_RenderCopy(renderer, source, &rect, NULL);
+            CopyTexture(renderer, source, pixelFormat, startX + j * tileWidth, startY, tileWidth, tileHeight, tile);
         }
+        std::cout << "Tile count for LoadMonsterObjects: " << tile << std::endl;
     }
 
     void LoadMiscObjects(SDL_Renderer *renderer, SDL_Texture *source, int &tile, Uint32 pixelFormat)
@@ -343,45 +227,23 @@ public:
         int tileHeight = 3;
         int startX = 136;
         int startY = 260;
-        int j = 0;
-        SDL_Rect rect;
 
-        rect.x = startX;
-        rect.y = startY;
-        rect.w = tileWidth;
-        rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-        SDL_SetRenderTarget(renderer, tiles[tile++]);
-        SDL_RenderCopy(renderer, source, &rect, NULL);
+        CopyTexture(renderer, source, pixelFormat, startX, startY, tileWidth, tileHeight, tile);
 
         // Load player bullet (left)
         startX = 0;
         startY = 280;
-        rect.x = startX;
-        rect.y = startY;
-        rect.w = tileWidth;
-        rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-        SDL_SetRenderTarget(renderer, tiles[tile++]);
-        SDL_RenderCopy(renderer, source, &rect, NULL);
+
+        CopyTexture(renderer, source, pixelFormat, startX, startY, tileWidth, tileHeight, tile);
 
         // Load death animations
-        tileHeight = 16;
-        tileWidth = 16;
+        tileWidth = 20;
+        tileHeight = 13;
         startX = 12;
         startY = 280;
-        for (j = 0; j < 3; j++)
+        for (int j = 0; j < 4; j++)
         {
-            rect.x = startX + j * tileWidth;
-            rect.y = startY;
-            rect.w = tileWidth;
-            rect.h = tileHeight;
-            tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-            SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-            SDL_SetRenderTarget(renderer, tiles[tile++]);
-            SDL_RenderCopy(renderer, source, &rect, NULL);
+            CopyTexture(renderer, source, pixelFormat, startX + j * tileWidth, startY, tileWidth, tileHeight, tile);
         }
 
         // JETPACK text
@@ -389,70 +251,35 @@ public:
         tileHeight = 11;
         startX = 92;
         startY = 280;
-        rect.x = startX;
-        rect.y = startY;
-        rect.w = tileWidth;
-        rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-        SDL_SetRenderTarget(renderer, tiles[tile++]);
-        SDL_RenderCopy(renderer, source, &rect, NULL);
+        CopyTexture(renderer, source, pixelFormat, startX, startY, tileWidth, tileHeight, tile);
 
         // GUN Text
         tileWidth = 62;
         tileHeight = 11;
         startX = 154;
         startY = 280;
-        rect.x = startX;
-        rect.y = startY;
-        rect.w = tileWidth;
-        rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-        SDL_SetRenderTarget(renderer, tiles[tile++]);
-        SDL_RenderCopy(renderer, source, &rect, NULL);
+        CopyTexture(renderer, source, pixelFormat, startX, startY, tileWidth, tileHeight, tile);
 
         // DAVES:___
         tileWidth = 62;
         tileHeight = 11;
         startX = 216;
         startY = 280;
-        rect.x = startX;
-        rect.y = startY;
-        rect.w = tileWidth;
-        rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-        SDL_SetRenderTarget(renderer, tiles[tile++]);
-        SDL_RenderCopy(renderer, source, &rect, NULL);
+        CopyTexture(renderer, source, pixelFormat, startX, startY, tileWidth, tileHeight, tile);
 
         // LEVEL:___
         tileWidth = 62;
         tileHeight = 11;
         startX = 0;
         startY = 293;
-        rect.x = startX;
-        rect.y = startY;
-        rect.w = tileWidth;
-        rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-        SDL_SetRenderTarget(renderer, tiles[tile++]);
-        SDL_RenderCopy(renderer, source, &rect, NULL);
+        CopyTexture(renderer, source, pixelFormat, startX, startY, tileWidth, tileHeight, tile);
 
         // SCORE:___
         tileWidth = 62;
         tileHeight = 11;
         startX = 62;
         startY = 293;
-        rect.x = startX;
-        rect.y = startY;
-        rect.w = tileWidth;
-        rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-        SDL_SetRenderTarget(renderer, tiles[tile++]);
-        SDL_RenderCopy(renderer, source, &rect, NULL);
+        CopyTexture(renderer, source, pixelFormat, startX, startY, tileWidth, tileHeight, tile);
 
         // GO THRU THE DOOR
         // LEVEL:___
@@ -460,100 +287,51 @@ public:
         tileHeight = 14;
         startX = 124;
         startY = 293;
-        rect.x = startX;
-        rect.y = startY;
-        rect.w = tileWidth;
-        rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-        SDL_SetRenderTarget(renderer, tiles[tile++]);
-        SDL_RenderCopy(renderer, source, &rect, NULL);
+        CopyTexture(renderer, source, pixelFormat, startX, startY, tileWidth, tileHeight, tile);
 
         // WARP Text
         tileWidth = 73;
         tileHeight = 15;
         startX = 300;
         startY = 293;
-        rect.x = startX;
-        rect.y = startY;
-        rect.w = tileWidth;
-        rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-        SDL_SetRenderTarget(renderer, tiles[tile++]);
-        SDL_RenderCopy(renderer, source, &rect, NULL);
+        CopyTexture(renderer, source, pixelFormat, startX, startY, tileWidth, tileHeight, tile);
 
         // ZONE Text
-        tileWidth = 68;
+        tileWidth = 67;
         tileHeight = 15;
         startX = 373;
         startY = 293;
-        rect.x = startX;
-        rect.y = startY;
-        rect.w = tileWidth;
-        rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-        SDL_SetRenderTarget(renderer, tiles[tile++]);
-        SDL_RenderCopy(renderer, source, &rect, NULL);
+        CopyTexture(renderer, source, pixelFormat, startX, startY, tileWidth, tileHeight, tile);
 
         // JETPACK meter
         tileWidth = 130;
         tileHeight = 12;
         startX = 440;
         startY = 293;
-        rect.x = startX;
-        rect.y = startY;
-        rect.w = tileWidth;
-        rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-        SDL_SetRenderTarget(renderer, tiles[tile++]);
-        SDL_RenderCopy(renderer, source, &rect, NULL);
+        CopyTexture(renderer, source, pixelFormat, startX, startY, tileWidth, tileHeight, tile);
 
         // JETPACK unit
         tileWidth = 6;
         tileHeight = 4;
         startX = 570;
         startY = 293;
-        rect.x = startX;
-        rect.y = startY;
-        rect.w = tileWidth;
-        rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-        SDL_SetRenderTarget(renderer, tiles[tile++]);
-        SDL_RenderCopy(renderer, source, &rect, NULL);
+        CopyTexture(renderer, source, pixelFormat, startX, startY, tileWidth, tileHeight, tile);
 
         // DAVE (Lives) unit
         tileWidth = 17;
         tileHeight = 12;
         startX = 576;
         startY = 293;
-        rect.x = startX;
-        rect.y = startY;
-        rect.w = tileWidth;
-        rect.h = tileHeight;
-        tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-        SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-        SDL_SetRenderTarget(renderer, tiles[tile++]);
-        SDL_RenderCopy(renderer, source, &rect, NULL);
+        CopyTexture(renderer, source, pixelFormat, startX, startY, tileWidth, tileHeight, tile);
 
         // Banners (4)
         tileWidth = 112;
         tileHeight = 47;
         startX = 0;
         startY = 308;
-        for (j = 0; j < 4; j++)
+        for (int j = 0; j < 4; j++)
         {
-            rect.x = startX + j * tileWidth;
-            rect.y = startY;
-            rect.w = tileWidth;
-            rect.h = tileHeight;
-            tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-            SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-            SDL_SetRenderTarget(renderer, tiles[tile++]);
-            SDL_RenderCopy(renderer, source, &rect, NULL);
+            CopyTexture(renderer, source, pixelFormat, startX + j * tileWidth, startY, tileWidth, tileHeight, tile);
         }
 
         // Digits (0 to 3)
@@ -561,16 +339,9 @@ public:
         tileHeight = 11;
         startX = 448;
         startY = 308;
-        for (j = 0; j < 3; j++)
+        for (int j = 0; j < 4; j++)
         {
-            rect.x = startX + j * tileWidth;
-            rect.y = startY;
-            rect.w = tileWidth;
-            rect.h = tileHeight;
-            tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-            SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-            SDL_SetRenderTarget(renderer, tiles[tile++]);
-            SDL_RenderCopy(renderer, source, &rect, NULL);
+            CopyTexture(renderer, source, pixelFormat, startX + j * tileWidth, startY, tileWidth, tileHeight, tile);
         }
 
         // Digits (4 to 9)
@@ -578,23 +349,17 @@ public:
         tileHeight = 11;
         startX = 0;
         startY = 355;
-        for (j = 0; j < 6; j++)
+        for (int j = 0; j < 6; j++)
         {
-            rect.x = startX + j * tileWidth;
-            rect.y = startY;
-            rect.w = tileWidth;
-            rect.h = tileHeight;
-            tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, tileWidth, tileHeight);
-            SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-            SDL_SetRenderTarget(renderer, tiles[tile++]);
-            SDL_RenderCopy(renderer, source, &rect, NULL);
+            CopyTexture(renderer, source, pixelFormat, startX + j * tileWidth, startY, tileWidth, tileHeight, tile);
         }
+
+        std::cout << "Tile count for LoadMiscObjects: " << tile << std::endl;
     }
 
     void LoadTiles(SDL_Renderer *renderer)
     {
         SDL_Surface *surface = SDL_LoadBMP(m_TilemapPath.c_str());
-        // SDL_Surface *surface = SDL_ConvertSurfaceFormat(one, SDL_PIXELFORMAT_RGBA32, 0);
         if (!surface)
         {
             std::cout << "Tilemap not loaded" << std::endl;
@@ -602,29 +367,10 @@ public:
         }
 
         SDL_PixelFormat *pixelFormat = surface->format;
-        std::cout << pixelFormat->format << std::endl;
-        const char *formatName = SDL_GetPixelFormatName(pixelFormat->format);
-        printf("Pixel format name: %s\n", formatName);
 
         if (SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(pixelFormat, 0x00, 0x00, 0x00)) < 0)
         {
             std::cout << "Could not set color key: " << SDL_GetError() << std::endl;
-        }
-
-        Uint32 key;
-        Uint8 r = -1, g = -1, b = -1, a = -1;
-        if (SDL_GetColorKey(surface, &key) == 0)
-        {
-            SDL_GetRGB(key, surface->format, &r, &g, &b);
-            std::cout << key << ' ' << r << ' ' << g << ' ' << b << ' ' << std::endl;
-            if (!r || !g || !b || !a)
-            {
-                std::cout << "The color key is not set correctly" << SDL_GetError() << std::endl;
-            }
-        }
-        else
-        {
-            std::cout << "Could not get Color key" << SDL_GetError() << std::endl;
         }
 
         SDL_Texture *m_TilemapTexture = SDL_CreateTextureFromSurface(renderer, surface);
@@ -646,13 +392,13 @@ public:
 
         SDL_SetRenderTarget(renderer, NULL);
 
-        // SDL_DestroyTexture(m_TilemapTexture);
+        SDL_DestroyTexture(m_TilemapTexture);
 
         std::cout
             << "Final tile count: " << tile << std::endl;
     }
 
-    SDL_Texture *GetTileById(const int id)
+    SDL_Texture *GetTileById(const int &id)
     {
         return tiles[id];
     }
