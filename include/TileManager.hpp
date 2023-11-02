@@ -7,17 +7,7 @@
 
 class TileManager
 {
-public:
-    TileManager()
-    {
-        if (IMG_Init(IMG_INIT_PNG) < 0)
-        {
-            std::cout << "Could not initialize SDL_Image: " << SDL_GetError() << std::endl;
-        }
-
-        tiles = std::vector<SDL_Texture *>(158);
-    }
-
+private:
     void CopyTexture(SDL_Renderer *renderer, SDL_Texture *source, Uint32 &pixelFormat, const int &x, const int &y, const int &w, const int &h, int &tile)
     {
         SDL_Rect rect;
@@ -99,9 +89,9 @@ public:
     void LoadMonsterObjects(SDL_Renderer *renderer, SDL_Texture *source, int &tile, Uint32 pixelFormat)
     {
         int tileWidth = 28;
-        int tileHeight = 20;
+        int tileHeight = 15;
         int startX = 20;
-        int startY = 176;
+        int startY = 181;
         SDL_Rect rect;
         int j;
 
@@ -357,8 +347,25 @@ public:
         std::cout << "Tile count for LoadMiscObjects: " << tile << std::endl;
     }
 
-    void LoadTiles(SDL_Renderer *renderer)
+public:
+    TileManager(SDL_Renderer *renderer)
     {
+        if (IMG_Init(IMG_INIT_PNG) < 0)
+        {
+            std::cout << "Could not initialize SDL_Image: " << SDL_GetError() << std::endl;
+        }
+
+        this->tiles = std::vector<SDL_Texture *>(158);
+        this->renderer = renderer;
+    }
+
+    void LoadTiles()
+    {
+        if (!this->renderer)
+        {
+            SDL_Log("Renderer not set\n");
+            return;
+        }
         SDL_Surface *surface = SDL_LoadBMP(m_TilemapPath.c_str());
         if (!surface)
         {
@@ -411,5 +418,6 @@ private:
     const std::string m_TilemapPath = "D:\\Dev\\GameProgramming\\dangerous_dave_sdl\\assets\\dd_tilesheet.bmp";
     const int m_TilemapWidth = 145;
     const int m_TilemapHeight = 110;
+    SDL_Renderer *renderer;
     std::vector<SDL_Texture *> tiles;
 };
