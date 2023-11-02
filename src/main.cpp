@@ -1,27 +1,23 @@
 #include <iostream>
 #include <SDL.h>
-#include "Tile.hpp"
+#include "TileManager.hpp"
 #include "Level.hpp"
+#include "LevelData.hpp"
 #include "SDLApp.hpp"
 
 SDLApp *app;
-LevelData *levelData;
+// LevelData *levelData;
 TileManager *tileManager;
+Level *level;
 
 void HandleRendering()
 {
-    levelData->RenderLevelData(app->GetRenderer(), tileManager);
+    level->RenderLevel(tileManager);
+    // levelData->RenderLevelData(app->GetRenderer(), tileManager);
 }
-
-int k = 0;
 
 void HandleUpdate()
 {
-    int x = 0; // rand() % levelData->getLevelHeight();
-    int y = 0; // rand() % levelData->getLevelWidth();
-    int id = k;
-    // std::cout << "ID: " << id << std::endl;
-    levelData->SetLevelDataTile(x, y, id);
 }
 
 void HandleEvents()
@@ -34,23 +30,6 @@ void HandleEvents()
         case SDL_QUIT:
             app->Stop();
             break;
-        case SDL_KEYDOWN:
-            switch (event.key.keysym.sym)
-            {
-            case SDLK_RIGHT:
-                k++;
-                if (k > 157)
-                    k = 0;
-                break;
-            case SDLK_LEFT:
-                k--;
-                if (k < 0)
-                    k = 157;
-                break;
-            default:
-                break;
-            }
-            // std::cout << "Current tile id: " << k << std::endl;
         default:
             break;
         }
@@ -60,17 +39,21 @@ void HandleEvents()
 int main(int argc, char *argv[])
 {
     app = new SDLApp();
-    levelData = new LevelData();
-    tileManager = new TileManager();
-    tileManager->LoadTiles(app->GetRenderer());
+    // levelData = new LevelData();
+    tileManager = new TileManager(app->GetRenderer());
+    tileManager->LoadTiles();
+
+    level = new Level(app->GetRenderer(), tileManager);
+    level->CreateLevel();
 
     app->SetEventCallback(HandleEvents);
     app->SetUpdateCallback(HandleUpdate);
     app->SetRenderCallback(HandleRendering);
     app->Run();
 
+    delete level;
     delete tileManager;
-    delete levelData;
+    // delete levelData;
     delete app;
 
     return 0;

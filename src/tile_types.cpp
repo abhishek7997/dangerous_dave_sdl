@@ -1,4 +1,6 @@
-enum GameObject
+#pragma once
+
+enum StaticObject
 {
     EMPTY = 0,
     WALL_MUD = 1,

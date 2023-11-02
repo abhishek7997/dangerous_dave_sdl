@@ -1,3 +1,5 @@
+#pragma once
+
 #include <SDL.h>
 
 class GameState
@@ -17,6 +19,7 @@ public:
         if (posx < 1)
             posx = 1;
         playerObj.x = posx;
+        tileId = 57;
     }
     void moveRight()
     {
@@ -25,10 +28,14 @@ public:
         if (posx > 639)
             posx = 639;
         playerObj.y = posy;
+        tileId = 53;
     }
     void jump()
     {
         // implement player jump
+    }
+    void playerAnimation()
+    {
     }
 
     // A level is 20 tiles by 10 tiles (in the viewport/camera)
@@ -44,8 +51,10 @@ private:
     int lives = 3;
     int score = 0;
     int currentLevel;
-    int view_x = 0;
-    int view_y = 0;
+    int viewX = 0;
+    int viewY = 0;
+    int tileId = 0;
+    int tileOffset = 0;
 
     bool gotTrophy = false;
     bool canClimb = false;
