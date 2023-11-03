@@ -57,7 +57,7 @@ public:
         {
             starttime = SDL_GetTicks();
 
-            SDL_SetRenderDrawColor(renderer, 16, 32, 64, SDL_ALPHA_OPAQUE);
+            SDL_SetRenderDrawColor(renderer, 0x0, 0x0, 0x0, SDL_ALPHA_OPAQUE);
             SDL_RenderClear(renderer);
             m_EventCallback();
             m_UpdateCallback();
@@ -100,7 +100,7 @@ private:
     bool isRunning = true;
     const int m_WindowWidth = 960;
     const int m_WindowHeight = 480;
-    const int m_MaxFrameRate = 24;
+    const int m_MaxFrameRate = 2;
     SDL_Window *window = nullptr;
     SDL_Renderer *renderer = nullptr;
     std::function<void(void)> m_EventCallback = []() {};

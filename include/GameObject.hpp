@@ -3,6 +3,7 @@
 #include <vector>
 #include <utility>
 #include <SDL.h>
+#include "TileManager.hpp"
 #include "../src/tile_types.cpp"
 
 class IGameObject
@@ -23,8 +24,11 @@ public:
         }
         SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
         SDL_RenderCopy(renderer, texture, NULL, &(this->rect));
-        SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0, 0xff);
-        SDL_RenderDrawRect(renderer, &(this->rect));
+        if (tileId != 0)
+        {
+            SDL_SetRenderDrawColor(renderer, 0xff, 0x0, 0xff, 0xff);
+            SDL_RenderDrawRect(renderer, &(this->rect));
+        }
     };
     virtual void SetRectPosition(const int &x, const int &y)
     {
@@ -112,7 +116,7 @@ public:
         SetRectPosition(x, y);
         SetRectDimension(tileWidth, tileHeight);
         SetTileId(tileId);
-        this->movements = {{4, 5}, {5, 6}, {6, 7}, {7, 6}, {8, 5}, {9, 5}, {8, 5}, {7, 5}, {6, 5}, {5, 5}, {4, 5}};
+        this->movements = {{4, 2}, {6, 4}, {8, 6}, {10, 8}, {12, 10}, {12, 12}, {12, 10}, {12, 8}, {12, 6}, {12, 4}, {12, 2}, {10, 2}, {8, 2}, {6, 2}};
         this->size = this->movements.size();
         this->iterator = this->movements.begin();
     }
@@ -145,18 +149,18 @@ public:
         int cellY = currY / 16;
         int tileIndex = 0;
 
-        for (int i = cellX; i <= cellX; i++)
+        for (int i = cellX; i <= cellX + 1; i++)
         {
-            for (int j = cellY; j <= cellY; j++)
+            for (int j = cellY; j <= cellY + 1; j++)
             {
                 if (i < 0 || j < 0 || i > 10 || j > 20)
                     continue;
                 GameObject *gameObject = (*level)[i][j];
                 SDL_Rect *rect = gameObject->GetRectangle();
 
-                std::cout << "I: " << i << " J: " << j << std::endl;
+                // std::cout << "I: " << i << " J: " << j << std::endl;
                 // std::cout << "X: " << i << " J: " << j << std::endl;
-                std::cout << "Tile ID: " << gameObject->GetTileId() << std::endl;
+                // std::cout << "Tile ID: " << gameObject->GetTileId() << std::endl;
 
                 switch (gameObject->GetTileId())
                 {
@@ -169,7 +173,7 @@ public:
                 case StaticObject::WALL_RED:
                     if (SDL_HasIntersection(&(this->rect), rect))
                     {
-                        std::cout << "Collision occured with wall" << std::endl;
+                        std::cout << "Collision occured with wall at: " << i << ':' << j << std::endl;
                     }
                     break;
                 default:
