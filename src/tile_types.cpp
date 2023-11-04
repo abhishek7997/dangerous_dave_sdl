@@ -202,3 +202,11 @@ enum MiscObject
     DIGIT_EIGHT = 156,
     DIGIT_NINE = 157
 };
+
+enum DIR
+{
+    LEFT = 0,
+    RIGHT = 1,
+    UP = 2,
+    DOWN = 3
+};

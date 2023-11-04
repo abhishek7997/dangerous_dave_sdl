@@ -74,8 +74,6 @@ private:
     const int playerHeight = 16;
     const float gravity = 0.5f;
 
-    int posx = 2;
-    int posy = 2;
     int lives = 3;
     int score = 0;
     int currentLevel;

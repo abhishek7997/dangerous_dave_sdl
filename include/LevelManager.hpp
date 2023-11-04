@@ -12,10 +12,8 @@ using std::vector;
 class LevelManager
 {
 public:
-    LevelManager() = delete;
-    LevelManager(TileManager *tileManager)
+    LevelManager()
     {
-        this->tileManager = tileManager;
         for (int i = 0; i < m_Levels.size(); i++)
         {
             m_Levels[i] = nullptr;
@@ -42,5 +40,4 @@ public:
 
 private:
     std::array<Level *, 10> m_Levels;
-    TileManager const *tileManager = nullptr;
 };
