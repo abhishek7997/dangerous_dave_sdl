@@ -24,7 +24,15 @@ void HandleUpdate()
     }
     if (app->GetGameState()->GetPlayer()->GetDirection() == DIR::RIGHT)
     {
-        if (app->GetGameState()->GetPlayer()->GetRectangle()->x > 3 * 20 * 16)
+        if (app->GetGameState()->GetPlayer()->GetRectangle()->x > 5 * 20 * 16)
+        {
+            level->SetOffset(4 * 20 * 16);
+        }
+        else if (app->GetGameState()->GetPlayer()->GetRectangle()->x > 4 * 20 * 16)
+        {
+            level->SetOffset(4 * 20 * 16);
+        }
+        else if (app->GetGameState()->GetPlayer()->GetRectangle()->x > 3 * 20 * 16)
         {
             level->SetOffset(3 * 20 * 16);
         }
@@ -50,6 +58,14 @@ void HandleUpdate()
         else if (app->GetGameState()->GetPlayer()->GetRectangle()->x < 3 * 20 * 16)
         {
             level->SetOffset(2 * 20 * 16);
+        }
+        else if (app->GetGameState()->GetPlayer()->GetRectangle()->x < 4 * 20 * 16)
+        {
+            level->SetOffset(3 * 20 * 16);
+        }
+        else if (app->GetGameState()->GetPlayer()->GetRectangle()->x < 5 * 20 * 16)
+        {
+            level->SetOffset(4 * 20 * 16);
         }
     }
     std::cout << "Player X: " << app->GetGameState()->GetPlayer()->GetRectangle()->x << " Y: " << app->GetGameState()->GetPlayer()->GetRectangle()->y << std::endl;

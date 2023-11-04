@@ -49,8 +49,11 @@ public:
 
         m_Level[4][21] = new GameObject(21 * 16, 4 * 16, StaticObject::WALL_BLUE, tileManager);
         m_Level[4][39] = new GameObject(39 * 16, 4 * 16, StaticObject::WALL_BLUE, tileManager);
-        m_Level[3][40] = new GameObject(40 * 16, 2 * 16, StaticObject::FIRE_1, tileManager);
-        m_Level[3][45] = new GameObject(45 * 16, 2 * 16, StaticObject::FIRE_2, tileManager);
+        m_Level[3][40] = new GameObject(40 * 16, 3 * 16, StaticObject::FIRE_1, tileManager);
+        m_Level[3][45] = new GameObject(45 * 16, 3 * 16, StaticObject::FIRE_2, tileManager);
+        m_Level[4][65] = new GameObject(65 * 16, 4 * 16, StaticObject::TROPHY_1, tileManager);
+        m_Level[3][75] = new GameObject(75 * 16, 3 * 16, StaticObject::JETPACK, tileManager);
+        m_Level[5][95] = new GameObject(95 * 16, 5 * 16, StaticObject::GUN, tileManager);
 
         std::cout
             << "Static Game objects pushed" << std::endl;
