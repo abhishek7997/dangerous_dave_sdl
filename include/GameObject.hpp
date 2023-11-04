@@ -9,7 +9,7 @@
 class IGameObject
 {
 public:
-    virtual void Render(SDL_Renderer *renderer, TileManager *tileManager) const
+    void Render(SDL_Renderer *renderer, TileManager *tileManager) const
     {
         if (!tileManager)
         {
@@ -30,24 +30,25 @@ public:
             SDL_RenderDrawRect(renderer, &(this->rect));
         }
     };
-    virtual void SetRectPosition(const int &x, const int &y)
+
+    void SetRectPosition(const int &x, const int &y)
     {
         (this->rect).x = x;
         (this->rect).y = y;
     };
 
-    virtual void SetRectDimension(const int &w, const int &h)
+    void SetRectDimension(const int &w, const int &h)
     {
         (this->rect).w = w;
         (this->rect).h = h;
     }
 
-    virtual int GetTileId()
+    int GetTileId()
     {
         return this->tileId;
     }
 
-    virtual SDL_bool isColliding(const SDL_Rect *other)
+    SDL_bool isColliding(const SDL_Rect *other)
     {
         return SDL_HasIntersection(&(this->rect), other);
     }
@@ -61,7 +62,7 @@ protected:
     SDL_Rect rect;
     int tileId;
 
-    virtual void SetTileId(const int &tileId)
+    void SetTileId(const int &tileId)
     {
         if (tileId < 0 || tileId > 157)
         {
@@ -136,7 +137,7 @@ public:
         this->movements = movements;
     }
 
-    SDL_bool IsColliding(TileManager *const &tileManager, GameObject *(*level)[10][20])
+    SDL_bool IsColliding(TileManager *const &tileManager, std::array<std::array<GameObject *, 20>, 10> &level)
     {
         if (!tileManager)
         {
@@ -155,7 +156,7 @@ public:
             {
                 if (i < 0 || j < 0 || i > 10 || j > 20)
                     continue;
-                GameObject *gameObject = (*level)[i][j];
+                GameObject *gameObject = level[i][j];
                 SDL_Rect *rect = gameObject->GetRectangle();
 
                 // std::cout << "I: " << i << " J: " << j << std::endl;
@@ -189,15 +190,197 @@ private:
     std::vector<std::pair<int, int>>::iterator iterator;
 };
 
-class Player : IGameObject
+class Player : public IGameObject
 {
 public:
     Player()
     {
-        SetTileId(PlayerObject::PLAYER_FRONT);
+        x = 15;
+        y = 5;
+        this->SetRectDimension(16, 16);
+        this->SetRectPosition(x, y);
+        this->SetTileId(PlayerObject::PLAYER_FRONT);
+    }
+
+    void MoveLeft()
+    {
+        if (x - dx < 1)
+            return;
+
+        x -= dx;
+        this->SetRectPosition(x, y);
+    }
+
+    void MoveRight()
+    {
+        if (x + dx > 19 * 16)
+            return;
+
+        x += dx;
+        this->SetRectPosition(x, y);
+    }
+
+    void MoveUp()
+    {
+        if (y - dy < 1)
+            return;
+
+        y -= dy;
+        this->SetRectPosition(x, y);
+    }
+
+    void MoveDown()
+    {
+        if (y + dy > 19 * 16)
+            return;
+
+        y += dy;
+        this->SetRectPosition(x, y);
+    }
+
+    SDL_bool IsGrounded(TileManager *const &tileManager, std::array<std::array<GameObject *, 20>, 10> &level)
+    {
+        int currX = this->rect.x;
+        int currY = this->rect.y;
+
+        int col = currX / 16;
+        int row = currY / 16;
+
+        if (row >= 10)
+            return SDL_TRUE;
+
+        int tileId = level[row + 1][col]->GetTileId();
+
+        switch (tileId)
+        {
+        case StaticObject::WALL_BLUE:
+        case StaticObject::WALL_RED:
+        case StaticObject::WALL_HALF_1:
+        case StaticObject::WALL_HALF_2:
+        case StaticObject::WALL_HALF_3:
+        case StaticObject::WALL_HALF_4:
+        case StaticObject::WALL_METAL:
+        case StaticObject::WALL_MUD:
+        case StaticObject::WALL_MUD_2:
+        case StaticObject::WALL_LIGHT_BLUE:
+        case StaticObject::DIVIDER_PURPLE:
+        case StaticObject::PIPE_RIGHT:
+        case StaticObject::PIPE_DOWN:
+            return SDL_TRUE;
+            break;
+        default:
+            return SDL_FALSE;
+            break;
+        }
+    }
+
+    SDL_bool IsColliding(TileManager *const &tileManager, std::array<std::array<GameObject *, 20>, 10> &level)
+    {
+        if (!tileManager)
+        {
+            SDL_Log("Tile manager not set\n");
+            return SDL_FALSE;
+        }
+        int currX = this->rect.x;
+        int currY = this->rect.y;
+        int cellX = currX / 16;
+        int cellY = currY / 16;
+        int tileIndex = 0;
+
+        for (int i = cellX; i <= cellX + 1; i++)
+        {
+            for (int j = cellY; j <= cellY + 1; j++)
+            {
+                if (i < 0 || j < 0 || i > 10 || j > 20)
+                    continue;
+                GameObject *gameObject = level[i][j];
+                SDL_Rect *rect = gameObject->GetRectangle();
+
+                // std::cout << "I: " << i << " J: " << j << std::endl;
+                // std::cout << "X: " << i << " J: " << j << std::endl;
+                // std::cout << "Tile ID: " << gameObject->GetTileId() << std::endl;
+
+                switch (gameObject->GetTileId())
+                {
+                case StaticObject::EMPTY:
+                    if (SDL_HasIntersection(&(this->rect), rect))
+                    {
+                        // std::cout << "Collision occured with empty space" << std::endl;
+                    }
+                    break;
+                case StaticObject::WALL_RED:
+                case StaticObject::WALL_BLUE:
+                    if (SDL_HasIntersection(&(this->rect), rect))
+                    {
+                        std::cout << "Collision occured with wall at: " << i << ':' << j << std::endl;
+                    }
+                    break;
+                default:
+                    break;
+                }
+            }
+        }
+    }
+
+    void Gravity()
+    {
+        if (JumpState())
+        {
+            jumpHeight += gravity;
+            y += jumpHeight + gravity;
+            if (jumpHeight > 0)
+            {
+                inJump = false;
+                jumpHeight = -6;
+            }
+        }
+        else
+        {
+            inJump = false;
+            if (y + dy > 19 * 16)
+                return;
+
+            y += dy;
+        }
+        this->SetRectPosition(x, y);
+    }
+
+    void GetJumpTime()
+    {
+        jumpTimer = SDL_GetTicks();
+    }
+
+    bool JumpState()
+    {
+        return inJump;
+    }
+
+    void Jump()
+    {
+        if (jumpTimer - lastJump > 100)
+        {
+            std::cout << "Set jump" << std::endl;
+            inJump = true;
+            lastJump = jumpTimer;
+        }
+        else
+        {
+            std::cout << "No jump" << std::endl;
+            Gravity();
+        }
     }
 
 private:
     using IGameObject::GetTileId;
     using IGameObject::SetTileId;
+
+    int x, y;
+    float gravity = 0.5f;
+    int dx = 2;
+    int dy = 2;
+
+    bool inJump = false;
+    double jumpHeight = -6;
+    double jumpTimer;
+    double lastJump = 0;
 };

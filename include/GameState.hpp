@@ -1,46 +1,74 @@
 #pragma once
 
 #include <SDL.h>
+#include "GameObject.hpp"
 
 class GameState
 {
 public:
     GameState()
     {
-        playerObj.x = posx;
-        playerObj.y = posy;
-        playerObj.w = playerWidth;
-        playerObj.h = playerHeight;
+        this->player = new Player();
     }
+
     void moveLeft()
     {
-        // if not colliding
-        posx--;
-        if (posx < 1)
-            posx = 1;
-        playerObj.x = posx;
-        tileId = 57;
+        this->player->MoveLeft();
     }
+
     void moveRight()
     {
-        // if not colliding
-        posx++;
-        if (posx > 639)
-            posx = 639;
-        playerObj.y = posy;
-        tileId = 53;
+        this->player->MoveRight();
     }
+
+    void moveDown()
+    {
+        if (jetpackActivated)
+            return;
+        this->player->MoveDown();
+    }
+
+    void moveUp()
+    {
+        this->player->MoveUp();
+    }
+
+    void applyGravity()
+    {
+        if (jetpackActivated)
+            return;
+        this->player->Gravity();
+    }
+
     void jump()
     {
-        // implement player jump
+        this->player->Jump();
     }
+
     void playerAnimation()
     {
     }
 
-    // A level is 20 tiles by 10 tiles (in the viewport/camera)
-    // height = 20*16 = 320px
-    // width = 10*16 = 160px
+    void SetPlayer(Player *player)
+    {
+        this->player = player;
+    }
+
+    Player *&GetPlayer()
+    {
+        return this->player;
+    }
+
+    void toggleJetpack()
+    {
+        jetpackActivated = !jetpackActivated;
+    }
+
+    bool jetpackState()
+    {
+        return jetpackActivated;
+    }
+
 private:
     const int playerWidth = 20;
     const int playerHeight = 16;
@@ -51,12 +79,11 @@ private:
     int lives = 3;
     int score = 0;
     int currentLevel;
-    int viewX = 0;
-    int viewY = 0;
-    int tileId = 0;
     int tileOffset = 0;
 
+    bool jetpackActivated = false;
     bool gotTrophy = false;
     bool canClimb = false;
-    SDL_Rect playerObj;
+
+    Player *player = nullptr;
 };
