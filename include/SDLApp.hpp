@@ -31,7 +31,7 @@ public:
         window = SDL_CreateWindow("DD_SDL", 20, 20, m_WindowWidth, m_WindowHeight, SDL_WINDOW_SHOWN);
         renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-        SDL_RenderSetScale(renderer, 3, 3);
+                SDL_RenderSetScale(renderer, 3, 3);
         return 0;
     }
 
@@ -96,15 +96,20 @@ public:
         return SDL_HasIntersection(a, b);
     }
 
+    GameState *GetGameState()
+    {
+        return this->gameState;
+    }
+
 private:
     bool isRunning = true;
     const int m_WindowWidth = 960;
     const int m_WindowHeight = 480;
-    const int m_MaxFrameRate = 2;
+    const int m_MaxFrameRate = 30;
     SDL_Window *window = nullptr;
     SDL_Renderer *renderer = nullptr;
     std::function<void(void)> m_EventCallback = []() {};
     std::function<void(void)> m_UpdateCallback = []() {};
     std::function<void(void)> m_RenderCallback = []() {};
-    GameState *gameState;
+    GameState *gameState = nullptr;
 };
