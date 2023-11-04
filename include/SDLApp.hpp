@@ -31,7 +31,7 @@ public:
         window = SDL_CreateWindow("DD_SDL", 20, 20, m_WindowWidth, m_WindowHeight, SDL_WINDOW_SHOWN);
         renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-                SDL_RenderSetScale(renderer, 3, 3);
+        SDL_RenderSetScale(renderer, 3, 3);
         return 0;
     }
 

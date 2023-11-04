@@ -38,16 +38,22 @@ public:
         // static objects (walls)
         int tileWidth = 16;
         int tileHeight = 16;
-        for (int j = 0; j < 20; j++)
+        for (int j = 0; j < m_LevelWidth; j++)
         {
             int height = 3;
-            for (int i = 10 - height; i < 10; i++)
+            for (int i = 10 - height; i < m_LevelHeight; i++)
             {
                 m_Level[i][j] = new GameObject(j * tileHeight, i * tileWidth, StaticObject::WALL_RED, tileManager);
             }
         }
 
-        std::cout << "Static Game objects pushed" << std::endl;
+        m_Level[4][21] = new GameObject(21 * 16, 4 * 16, StaticObject::WALL_BLUE, tileManager);
+        m_Level[4][39] = new GameObject(39 * 16, 4 * 16, StaticObject::WALL_BLUE, tileManager);
+        m_Level[3][40] = new GameObject(40 * 16, 2 * 16, StaticObject::FIRE_1, tileManager);
+        m_Level[3][45] = new GameObject(45 * 16, 2 * 16, StaticObject::FIRE_2, tileManager);
+
+        std::cout
+            << "Static Game objects pushed" << std::endl;
 
         this->enemyObjects.push_back(new MonsterObject(10, 10, EnemyObject::SPIDER_1, tileManager));
         // this->enemyObjects.push_back(new MonsterObject(10, 10, EnemyObject::UFO_1, tileManager));
@@ -59,12 +65,13 @@ public:
     {
         int tileWidth = 16;
         int tileHeight = 16;
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < m_LevelHeight; i++)
         {
-            for (int j = 0; j < 20; j++)
+            for (int j = 0; j < m_LevelWidth; j++)
             {
+                // std::cout << "I: " << i << "J: " << j << std::endl;
                 if (m_Level[i][j])
-                    m_Level[i][j]->Render(renderer, tileManager);
+                    m_Level[i][j]->Render(renderer, tileManager, offset);
             }
         }
 
@@ -72,10 +79,8 @@ public:
         {
             obj->Move();
             obj->IsColliding(tileManager, m_Level);
-            obj->Render(renderer, tileManager);
+            obj->Render(renderer, tileManager, offset);
         }
-
-        // player->Render(renderer, tileManager);
     }
 
     SDL_Rect *QueryCell(const int &x, const int &y)
@@ -90,15 +95,26 @@ public:
         gameState->SetPlayer(player);
     }
 
-    std::array<std::array<GameObject *, 20>, 10> &GetLevel()
+    std::array<std::array<GameObject *, 100>, 10> &GetLevel()
     {
         return (this->m_Level);
     }
 
+    int GetOffset()
+    {
+        return this->offset;
+    }
+
+    void SetOffset(int o)
+    {
+        this->offset = o;
+    }
+
 private:
-    const int m_LevelWidth = 20;
+    const int m_LevelWidth = 100;
     const int m_LevelHeight = 10;
-    std::array<std::array<GameObject *, 20>, 10> m_Level;
+    int offset = 0;
+    std::array<std::array<GameObject *, 100>, 10> m_Level;
     SDL_Renderer *renderer = nullptr;
     TileManager *tileManager = nullptr;
     std::vector<MonsterObject *> enemyObjects;

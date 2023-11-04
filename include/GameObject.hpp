@@ -9,7 +9,7 @@
 class IGameObject
 {
 public:
-    void Render(SDL_Renderer *renderer, TileManager *tileManager) const
+    void Render(SDL_Renderer *renderer, TileManager *tileManager, const int &offset) const
     {
         if (!tileManager)
         {
@@ -23,11 +23,15 @@ public:
             return;
         }
         SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-        SDL_RenderCopy(renderer, texture, NULL, &(this->rect));
+
+        SDL_Rect dst = {this->rect.x - offset, this->rect.y, this->rect.w, this->rect.h};
+
+        SDL_RenderCopy(renderer, texture, NULL, &dst);
+
         if (tileId != 0)
         {
             SDL_SetRenderDrawColor(renderer, 0xff, 0x0, 0xff, 0xff);
-            SDL_RenderDrawRect(renderer, &(this->rect));
+            SDL_RenderDrawRect(renderer, &dst);
         }
     };
 
@@ -58,10 +62,6 @@ public:
         return &(this->rect);
     }
 
-protected:
-    SDL_Rect rect;
-    int tileId;
-
     void SetTileId(const int &tileId)
     {
         if (tileId < 0 || tileId > 157)
@@ -71,6 +71,10 @@ protected:
         }
         this->tileId = tileId;
     }
+
+protected:
+    SDL_Rect rect;
+    int tileId;
 };
 
 class GameObject : public IGameObject
@@ -137,7 +141,7 @@ public:
         this->movements = movements;
     }
 
-    SDL_bool IsColliding(TileManager *const &tileManager, std::array<std::array<GameObject *, 20>, 10> &level)
+    SDL_bool IsColliding(TileManager *const &tileManager, std::array<std::array<GameObject *, 100>, 10> &level)
     {
         if (!tileManager)
         {
@@ -154,7 +158,7 @@ public:
         {
             for (int j = cellY; j <= cellY + 1; j++)
             {
-                if (i < 0 || j < 0 || i > 10 || j > 20)
+                if (i < 0 || j < 0 || i > 10 || j > 100)
                     continue;
                 GameObject *gameObject = level[i][j];
                 SDL_Rect *rect = gameObject->GetRectangle();
@@ -208,15 +212,17 @@ public:
             return;
 
         x -= dx;
+        SetLeft();
         this->SetRectPosition(x, y);
     }
 
     void MoveRight()
     {
-        if (x + dx > 19 * 16)
+        if (x + dx > 99 * 16)
             return;
 
         x += dx;
+        SetRight();
         this->SetRectPosition(x, y);
     }
 
@@ -226,19 +232,21 @@ public:
             return;
 
         y -= dy;
+        SetUp();
         this->SetRectPosition(x, y);
     }
 
     void MoveDown()
     {
-        if (y + dy > 19 * 16)
+        if (y + dy > 99 * 16)
             return;
 
         y += dy;
+        SetDown();
         this->SetRectPosition(x, y);
     }
 
-    SDL_bool IsGrounded(TileManager *const &tileManager, std::array<std::array<GameObject *, 20>, 10> &level)
+    SDL_bool IsGrounded(TileManager *const &tileManager, std::array<std::array<GameObject *, 100>, 10> &level)
     {
         int currX = this->rect.x;
         int currY = this->rect.y;
@@ -274,7 +282,7 @@ public:
         }
     }
 
-    SDL_bool IsColliding(TileManager *const &tileManager, std::array<std::array<GameObject *, 20>, 10> &level)
+    SDL_bool IsColliding(TileManager *const &tileManager, std::array<std::array<GameObject *, 100>, 10> &level)
     {
         if (!tileManager)
         {
@@ -337,7 +345,7 @@ public:
         else
         {
             inJump = false;
-            if (y + dy > 19 * 16)
+            if (y + dy > 99 * 16)
                 return;
 
             y += dy;
@@ -370,14 +378,37 @@ public:
         }
     }
 
-private:
-    using IGameObject::GetTileId;
-    using IGameObject::SetTileId;
+    void SetLeft()
+    {
+        currDir = DIR::LEFT;
+    }
 
+    void SetRight()
+    {
+        currDir = DIR::RIGHT;
+    }
+
+    void SetUp()
+    {
+        currDir = DIR::UP;
+    }
+
+    void SetDown()
+    {
+        currDir = DIR::DOWN;
+    }
+
+    int GetDirection()
+    {
+        return currDir;
+    }
+
+private:
     int x, y;
     float gravity = 0.5f;
     int dx = 2;
     int dy = 2;
+    int currDir = 0;
 
     bool inJump = false;
     double jumpHeight = -6;
