@@ -3,130 +3,147 @@
 #include "TileManager.hpp"
 #include "Level.hpp"
 #include "LevelManager.hpp"
+#include "GameState.hpp"
 #include "SDLApp.hpp"
 
 SDLApp *app;
 TileManager *tileManager;
 LevelManager *levelManager;
-Level *level;
+GameState *gameState;
 
 void HandleRendering()
 {
-    level->RenderLevel();
-    app->GetGameState()->GetPlayer()->Render(app->GetRenderer(), tileManager, level->GetOffset());
+    levelManager->getLevel(gameState->getCurrentLevel())->RenderLevel();
+    gameState->GetPlayer()->Render(app->GetRenderer(), levelManager->getLevel(gameState->getCurrentLevel())->GetOffset());
 }
 
 void HandleUpdate()
 {
-    if (app->GetGameState()->GetPlayer()->IsGrounded(tileManager, level->GetLevel()) == SDL_FALSE)
+    Level *level = levelManager->getLevel(gameState->getCurrentLevel());
+    if (gameState->GetPlayer()->IsGrounded(tileManager, level->GetLevel()) == SDL_FALSE)
     {
-        app->GetGameState()->applyGravity();
+        gameState->applyGravity();
     }
-    if (app->GetGameState()->GetPlayer()->GetDirection() == DIR::RIGHT)
+    if (gameState->GetPlayer()->GetDirection() == DIR::RIGHT)
     {
-        if (app->GetGameState()->GetPlayer()->GetRectangle()->x > 5 * 20 * 16)
+        if (gameState->GetPlayer()->GetRectangle()->x > 5 * 20 * 16)
         {
             level->SetOffset(4 * 20 * 16);
         }
-        else if (app->GetGameState()->GetPlayer()->GetRectangle()->x > 4 * 20 * 16)
+        else if (gameState->GetPlayer()->GetRectangle()->x > 4 * 20 * 16)
         {
             level->SetOffset(4 * 20 * 16);
         }
-        else if (app->GetGameState()->GetPlayer()->GetRectangle()->x > 3 * 20 * 16)
+        else if (gameState->GetPlayer()->GetRectangle()->x > 3 * 20 * 16)
         {
             level->SetOffset(3 * 20 * 16);
         }
-        else if (app->GetGameState()->GetPlayer()->GetRectangle()->x > 2 * 20 * 16)
+        else if (gameState->GetPlayer()->GetRectangle()->x > 2 * 20 * 16)
         {
             level->SetOffset(2 * 20 * 16);
         }
-        else if (app->GetGameState()->GetPlayer()->GetRectangle()->x > 20 * 16)
+        else if (gameState->GetPlayer()->GetRectangle()->x > 20 * 16)
         {
             level->SetOffset(20 * 16);
         }
     }
-    else if (app->GetGameState()->GetPlayer()->GetDirection() == DIR::LEFT)
+    else if (gameState->GetPlayer()->GetDirection() == DIR::LEFT)
     {
-        if (app->GetGameState()->GetPlayer()->GetRectangle()->x < 20 * 16)
+        if (gameState->GetPlayer()->GetRectangle()->x < 20 * 16)
         {
             level->SetOffset(0);
         }
-        else if (app->GetGameState()->GetPlayer()->GetRectangle()->x < 2 * 20 * 16)
+        else if (gameState->GetPlayer()->GetRectangle()->x < 2 * 20 * 16)
         {
             level->SetOffset(20 * 16);
         }
-        else if (app->GetGameState()->GetPlayer()->GetRectangle()->x < 3 * 20 * 16)
+        else if (gameState->GetPlayer()->GetRectangle()->x < 3 * 20 * 16)
         {
             level->SetOffset(2 * 20 * 16);
         }
-        else if (app->GetGameState()->GetPlayer()->GetRectangle()->x < 4 * 20 * 16)
+        else if (gameState->GetPlayer()->GetRectangle()->x < 4 * 20 * 16)
         {
             level->SetOffset(3 * 20 * 16);
         }
-        else if (app->GetGameState()->GetPlayer()->GetRectangle()->x < 5 * 20 * 16)
+        else if (gameState->GetPlayer()->GetRectangle()->x < 5 * 20 * 16)
         {
             level->SetOffset(4 * 20 * 16);
         }
     }
-    std::cout << "Player X: " << app->GetGameState()->GetPlayer()->GetRectangle()->x << " Y: " << app->GetGameState()->GetPlayer()->GetRectangle()->y << std::endl;
+    std::cout << "Player X: " << gameState->GetPlayer()->GetRectangle()->x << " Y: " << gameState->GetPlayer()->GetRectangle()->y << std::endl;
+
+    // If player collides with monsters, player dies, camera (level offset) is reset, player starting position is reset
+    if (gameState->GetPlayer()->IsColliding(level->GetLevel()) == SDL_TRUE)
+    {
+        std::cout << "Collided with something" << std::endl;
+    }
 }
 
 void HandleEvents()
 {
-    app->GetGameState()->GetPlayer()->GetJumpTime();
+    Level *level = levelManager->getLevel(gameState->getCurrentLevel());
+    gameState->GetPlayer()
+        ->GetJumpTime();
     const Uint8 *keystates = SDL_GetKeyboardState(NULL);
     if (keystates[SDL_SCANCODE_RIGHT] && keystates[SDL_SCANCODE_UP])
     {
-        app->GetGameState()->moveRight();
-        if (app->GetGameState()->GetPlayer()->IsGrounded(tileManager, level->GetLevel()) == SDL_TRUE)
+        gameState->moveRight();
+        if (gameState->GetPlayer()->IsGrounded(tileManager, level->GetLevel()) == SDL_TRUE)
         {
-            app->GetGameState()->jump();
-            app->GetGameState()->GetPlayer()->SetTileId(PlayerObject::PLAYER_JUMP_R);
+            gameState->jump();
         }
+        gameState->GetPlayer()->SetTileId(PlayerObject::PLAYER_JUMP_R);
     }
     else if (keystates[SDL_SCANCODE_LEFT] && keystates[SDL_SCANCODE_UP])
     {
-        app->GetGameState()->moveLeft();
-        if (app->GetGameState()->GetPlayer()->IsGrounded(tileManager, level->GetLevel()) == SDL_TRUE)
+        gameState->moveLeft();
+        if (gameState->GetPlayer()->IsGrounded(tileManager, level->GetLevel()) == SDL_TRUE)
         {
-            app->GetGameState()->jump();
-            app->GetGameState()->GetPlayer()->SetTileId(PlayerObject::PLAYER_JUMP_L);
+            gameState->jump();
         }
+        gameState->GetPlayer()->SetTileId(PlayerObject::PLAYER_JUMP_L);
     }
     else if (keystates[SDL_SCANCODE_RIGHT])
     {
-        app->GetGameState()->moveRight();
-        if (app->GetGameState()->jetpackState())
+        gameState->moveRight();
+        if (gameState->jetpackState())
         {
-            app->GetGameState()->GetPlayer()->SetTileId(PlayerObject::PLAYER_JETPACK_R_1);
+            gameState->GetPlayer()->SetTileId(PlayerObject::PLAYER_JETPACK_R_1);
         }
         else
         {
-            app->GetGameState()->GetPlayer()->SetTileId(PlayerObject::PLAYER_WALK_R_1);
+            gameState->GetPlayer()->SetTileId(PlayerObject::PLAYER_WALK_R_1);
         }
     }
     else if (keystates[SDL_SCANCODE_LEFT])
     {
-        app->GetGameState()->moveLeft();
-        if (app->GetGameState()->jetpackState())
+        gameState->moveLeft();
+        if (gameState->jetpackState())
         {
-            app->GetGameState()->GetPlayer()->SetTileId(PlayerObject::PLAYER_JETPACK_L_1);
+            gameState->GetPlayer()->SetTileId(PlayerObject::PLAYER_JETPACK_L_1);
         }
         else
         {
-            app->GetGameState()->GetPlayer()->SetTileId(PlayerObject::PLAYER_WALK_L_1);
+            gameState->GetPlayer()->SetTileId(PlayerObject::PLAYER_WALK_L_1);
         }
     }
     else if (keystates[SDL_SCANCODE_UP])
     {
-        if (app->GetGameState()->jetpackState())
+        if (gameState->jetpackState())
         {
-            app->GetGameState()->moveUp();
+            gameState->moveUp();
         }
-        else if (app->GetGameState()->GetPlayer()->IsGrounded(tileManager, level->GetLevel()) == SDL_TRUE)
+        else if (gameState->GetPlayer()->IsGrounded(tileManager, level->GetLevel()) == SDL_TRUE)
         {
-            app->GetGameState()->jump();
-            app->GetGameState()->GetPlayer()->SetTileId(PlayerObject::PLAYER_JUMP_R);
+            gameState->jump();
+            gameState->GetPlayer()->SetTileId(PlayerObject::PLAYER_JUMP_R);
+        }
+    }
+    else if (keystates[SDL_SCANCODE_DOWN])
+    {
+        if (gameState->jetpackState())
+        {
+            gameState->moveDown();
         }
     }
 
@@ -143,11 +160,11 @@ void HandleEvents()
             {
             case SDL_SCANCODE_LALT:
             case SDL_SCANCODE_RALT:
-                app->GetGameState()->toggleJetpack();
-                if (app->GetGameState()->jetpackState())
-                    app->GetGameState()->GetPlayer()->SetTileId(PlayerObject::PLAYER_JETPACK_L_1);
+                gameState->toggleJetpack();
+                if (gameState->jetpackState())
+                    gameState->GetPlayer()->SetTileId(PlayerObject::PLAYER_JETPACK_L_1);
                 else
-                    app->GetGameState()->GetPlayer()->SetTileId(PlayerObject::PLAYER_FRONT);
+                    gameState->GetPlayer()->SetTileId(PlayerObject::PLAYER_FRONT);
                 break;
             }
         }
@@ -157,20 +174,21 @@ void HandleEvents()
 int main(int argc, char *argv[])
 {
     app = new SDLApp();
-    tileManager = new TileManager(app->GetRenderer());
+    gameState = GameState::getInstance(app->GetRenderer());
+    tileManager = TileManager::getInstance(app->GetRenderer()); // Loaded the tile manager
     tileManager->LoadTiles();
 
-    levelManager = new LevelManager();
+    levelManager = LevelManager::getInstance();
+    levelManager->SetRenderer(app->GetRenderer());
+    levelManager->Initialize();
 
-    level = new Level(app->GetRenderer(), tileManager);
-    level->CreateLevel();
+    std::cout << "Initialized level manager" << std::endl;
 
     app->SetEventCallback(HandleEvents);
     app->SetUpdateCallback(HandleUpdate);
     app->SetRenderCallback(HandleRendering);
     app->Run();
 
-    delete level;
     delete levelManager;
     delete tileManager;
     delete app;

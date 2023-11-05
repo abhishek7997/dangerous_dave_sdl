@@ -6,68 +6,27 @@
 class GameState
 {
 public:
-    GameState()
-    {
-        this->player = new Player();
-    }
+    void moveLeft();
+    void moveRight();
+    void moveDown();
+    void moveUp();
+    void applyGravity();
+    void jump();
+    void playerAnimation();
+    void SetPlayer(Player *player);
+    Player *&GetPlayer();
+    void toggleJetpack();
+    bool jetpackState();
+    int getCurrentLevel();
+    void SetRenderer(SDL_Renderer *renderer);
+    static GameState *getInstance();
+    static GameState *getInstance(SDL_Renderer *renderer);
+    void addScore(int score);
 
-    void moveLeft()
-    {
-        this->player->MoveLeft();
-    }
-
-    void moveRight()
-    {
-        this->player->MoveRight();
-    }
-
-    void moveDown()
-    {
-        if (jetpackActivated)
-            return;
-        this->player->MoveDown();
-    }
-
-    void moveUp()
-    {
-        this->player->MoveUp();
-    }
-
-    void applyGravity()
-    {
-        if (jetpackActivated)
-            return;
-        this->player->Gravity();
-    }
-
-    void jump()
-    {
-        this->player->Jump();
-    }
-
-    void playerAnimation()
-    {
-    }
-
-    void SetPlayer(Player *player)
-    {
-        this->player = player;
-    }
-
-    Player *&GetPlayer()
-    {
-        return this->player;
-    }
-
-    void toggleJetpack()
-    {
-        jetpackActivated = !jetpackActivated;
-    }
-
-    bool jetpackState()
-    {
-        return jetpackActivated;
-    }
+protected:
+    static GameState *instance;
+    GameState();
+    GameState(SDL_Renderer *renderer);
 
 private:
     const int playerWidth = 20;
@@ -76,7 +35,7 @@ private:
 
     int lives = 3;
     int score = 0;
-    int currentLevel;
+    int currentLevel = 0;
     int tileOffset = 0;
 
     bool jetpackActivated = false;
@@ -84,4 +43,5 @@ private:
     bool canClimb = false;
 
     Player *player = nullptr;
+    SDL_Renderer *renderer = nullptr;
 };
