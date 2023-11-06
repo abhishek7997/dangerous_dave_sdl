@@ -2,6 +2,7 @@
 
 #include <SDL.h>
 #include "GameObject.hpp"
+#include "DigitDisplay.hpp"
 
 class GameState
 {
@@ -22,6 +23,7 @@ public:
     static GameState *getInstance();
     static GameState *getInstance(SDL_Renderer *renderer);
     void addScore(int score);
+    void RenderStates();
 
 protected:
     static GameState *instance;
@@ -41,7 +43,9 @@ private:
     bool jetpackActivated = false;
     bool gotTrophy = false;
     bool canClimb = false;
+    bool gotGun = false;
 
     Player *player = nullptr;
     SDL_Renderer *renderer = nullptr;
+    DigitDisplay *digitDisplay = nullptr;
 };
