@@ -13,6 +13,7 @@ GameState *gameState;
 
 void HandleRendering()
 {
+    gameState->RenderStates();
     levelManager->getLevel(gameState->getCurrentLevel())->RenderLevel();
     gameState->GetPlayer()->Render(app->GetRenderer(), levelManager->getLevel(gameState->getCurrentLevel())->GetOffset());
 }

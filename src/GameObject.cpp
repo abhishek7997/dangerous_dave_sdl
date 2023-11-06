@@ -17,7 +17,7 @@ void IGameObject::Render(SDL_Renderer *renderer, const int &offset) const
     }
     SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 
-    SDL_Rect dst = {this->rect.x - offset, this->rect.y, this->rect.w, this->rect.h};
+    SDL_Rect dst = {this->rect.x - offset, this->rect.y + 16, this->rect.w, this->rect.h};
 
     SDL_RenderCopy(renderer, texture, NULL, &dst);
 
