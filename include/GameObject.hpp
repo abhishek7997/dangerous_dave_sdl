@@ -5,7 +5,7 @@
 #include <utility>
 #include <SDL.h>
 #include "TileManager.hpp"
-#include "../src/tile_types.cpp"
+#include "tile_types.hpp"
 
 class IGameObject
 {
@@ -54,9 +54,11 @@ public:
     void MoveRight();
     void MoveUp();
     void MoveDown();
-    SDL_bool IsGrounded(TileManager *const &tileManager, std::array<std::array<GameObject *, 100>, 10> &level);
+    // bool IsGrounded(TileManager *const &tileManager, std::array<std::array<GameObject *, 100>, 10> &level);
+    bool IsGrounded();
 
-    SDL_bool IsColliding(std::array<std::array<GameObject *, 100>, 10> &level);
+    bool IsColliding(int x, int y);
+    void IsColliding();
     void Gravity();
     void GetJumpTime();
     bool JumpState();
@@ -66,16 +68,32 @@ public:
     void SetUp();
     void SetDown();
     int GetDirection();
+    bool canMoveDown();
+    bool canMoveUp();
+    bool canMoveLeft();
+    bool canMoveRight();
+    bool canClimb();
+    void PrintRectCoordinates();
+    void IncreaseSpeed();
+    void ResetSpeed();
 
 private:
-    int x, y;
+    int x,
+        y;
     float gravity = 0.5f;
     int dx = 2;
     int dy = 2;
     int currDir = 0;
+    bool can_move_left = true;
+    bool can_move_right = true;
+    bool can_move_up = true;
+    bool can_move_down = true;
+    bool isGrounded = false;
+    bool climb = false;
 
     bool inJump = false;
     double jumpHeight = -6;
     double jumpTimer;
-    double lastJump = 0;
+    double lastJump = 0.0;
+    bool collision_point[8] = {true};
 };

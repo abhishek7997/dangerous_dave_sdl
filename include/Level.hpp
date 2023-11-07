@@ -6,7 +6,7 @@
 #include "GameObject.hpp"
 #include "TileManager.hpp"
 #include "GameState.hpp"
-#include "../src/tile_types.cpp"
+#include "tile_types.hpp"
 
 class Level
 {
@@ -19,6 +19,7 @@ public:
     std::array<std::array<GameObject *, 100>, 10> &GetLevel();
     int GetOffset();
     void SetOffset(int o);
+    void ClearCell(const int &x, const int &y);
 
 private:
     const int m_LevelWidth = 100;

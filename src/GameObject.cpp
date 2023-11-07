@@ -1,5 +1,6 @@
 #include <array>
 #include "GameState.hpp"
+#include "LevelManager.hpp"
 
 void IGameObject::Render(SDL_Renderer *renderer, const int &offset) const
 {
@@ -26,6 +27,22 @@ void IGameObject::Render(SDL_Renderer *renderer, const int &offset) const
         SDL_SetRenderDrawColor(renderer, 0xff, 0x0, 0xff, 0xff);
         SDL_RenderDrawRect(renderer, &dst);
     }
+
+    // if (tileId >= 53 && tileId <= 82)
+    // {
+    //     SDL_Rect dst2 = {this->rect.x - offset + 4, this->rect.y + 16, this->rect.w, this->rect.h};
+    //     SDL_SetRenderDrawColor(renderer, 0xff, 0x00, 0x00, 0xff);
+    //     SDL_RenderDrawRect(renderer, &dst2);
+    //     SDL_Rect dst3 = {this->rect.x - offset - 4, this->rect.y + 16, this->rect.w, this->rect.h};
+    //     SDL_SetRenderDrawColor(renderer, 0x00, 0xff, 0x00, 0xff);
+    //     SDL_RenderDrawRect(renderer, &dst3);
+    //     SDL_Rect dst4 = {this->rect.x - offset, this->rect.y + 4 + 16, this->rect.w, this->rect.h};
+    //     SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xff, 0xff);
+    //     SDL_RenderDrawRect(renderer, &dst4);
+    //     SDL_Rect dst5 = {this->rect.x - offset, this->rect.y - 4 + 16, this->rect.w, this->rect.h};
+    //     SDL_SetRenderDrawColor(renderer, 0xff, 0xdd, 0xee, 0xff);
+    //     SDL_RenderDrawRect(renderer, &dst5);
+    // }
 };
 
 void IGameObject::SetRectPosition(const int &x, const int &y)
@@ -153,16 +170,32 @@ SDL_bool MonsterObject::IsColliding(std::array<std::array<GameObject *, 100>, 10
 
             switch (gameObject->GetTileId())
             {
-            case StaticObject::EMPTY:
+            case PlayerObject::PLAYER_BULLET_L:
+            case PlayerObject::PLAYER_BULLET_R:
                 if (SDL_HasIntersection(&(this->rect), rect))
                 {
-                    // std::cout << "Collision occured with empty space" << std::endl;
+                    std::cout << "Kill only the monster by bullet, left/right" << std::endl;
                 }
                 break;
-            case StaticObject::WALL_RED:
+            case PlayerObject::PLAYER_FRONT:
+            case PlayerObject::PLAYER_WALK_L_1:
+            case PlayerObject::PLAYER_WALK_L_2:
+            case PlayerObject::PLAYER_WALK_L_3:
+            case PlayerObject::PLAYER_WALK_R_1:
+            case PlayerObject::PLAYER_WALK_R_2:
+            case PlayerObject::PLAYER_WALK_R_3:
+            case PlayerObject::PLAYER_CLIMB_1:
+            case PlayerObject::PLAYER_CLIMB_2:
+            case PlayerObject::PLAYER_CLIMB_3:
+            case PlayerObject::PLAYER_JETPACK_L_1:
+            case PlayerObject::PLAYER_JETPACK_L_2:
+            case PlayerObject::PLAYER_JETPACK_L_3:
+            case PlayerObject::PLAYER_JETPACK_R_1:
+            case PlayerObject::PLAYER_JETPACK_R_2:
+            case PlayerObject::PLAYER_JETPACK_R_3:
                 if (SDL_HasIntersection(&(this->rect), rect))
                 {
-                    std::cout << "Collision occured with wall at: " << i << ':' << j << std::endl;
+                    std::cout << "Kill both the player and monster" << std::endl;
                 }
                 break;
             default:
@@ -221,96 +254,79 @@ void Player::MoveDown()
     this->SetRectPosition(x, y);
 }
 
-SDL_bool Player::IsGrounded(TileManager *const &tileManager, std::array<std::array<GameObject *, 100>, 10> &level)
+// bool Player::IsGrounded(TileManager *const &tileManager, std::array<std::array<GameObject *, 100>, 10> &level)
+bool Player::IsGrounded()
 {
-    int currX = this->rect.x;
-    int currY = this->rect.y;
+    // int currX = this->rect.x;
+    // int currY = this->rect.y;
 
-    int minCol = currX / 16;
-    int maxCol = (currX + this->rect.w) / 16;
-    int row = currY / 16;
+    // int minCol = currX / 16;
+    // int maxCol = (currX + this->rect.w) / 16;
+    // int row = currY / 16;
 
-    if (row >= 10)
-        return SDL_TRUE;
+    // if (row >= 10)
+    //     return SDL_TRUE;
 
-    for (int col = minCol; col <= maxCol; ++col)
-    {
-        int tileId = level[row + 1][col]->GetTileId();
+    // for (int col = minCol; col <= maxCol; ++col)
+    // {
+    //     int tileId = level[row + 1][col]->GetTileId();
 
-        switch (tileId)
-        {
-        case StaticObject::WALL_BLUE:
-        case StaticObject::WALL_RED:
-        case StaticObject::WALL_HALF_1:
-        case StaticObject::WALL_HALF_2:
-        case StaticObject::WALL_HALF_3:
-        case StaticObject::WALL_HALF_4:
-        case StaticObject::WALL_METAL:
-        case StaticObject::WALL_MUD:
-        case StaticObject::WALL_MUD_2:
-        case StaticObject::WALL_LIGHT_BLUE:
-        case StaticObject::DIVIDER_PURPLE:
-        case StaticObject::PIPE_RIGHT:
-        case StaticObject::PIPE_DOWN:
-            return SDL_TRUE;
-            break;
-        default:
+    //     switch (tileId)
+    //     {
+    //     case StaticObject::WALL_BLUE:
+    //     case StaticObject::WALL_RED:
+    //     case StaticObject::WALL_HALF_1:
+    //     case StaticObject::WALL_HALF_2:
+    //     case StaticObject::WALL_HALF_3:
+    //     case StaticObject::WALL_HALF_4:
+    //     case StaticObject::WALL_METAL:
+    //     case StaticObject::WALL_MUD:
+    //     case StaticObject::WALL_MUD_2:
+    //     case StaticObject::WALL_LIGHT_BLUE:
+    //     case StaticObject::DIVIDER_PURPLE:
+    //     case StaticObject::PIPE_RIGHT:
+    //     case StaticObject::PIPE_DOWN:
+    //         return SDL_TRUE;
+    //         break;
+    //     default:
 
-            break;
-        }
-    }
-    return SDL_FALSE;
+    //         break;
+    //     }
+    // }
+    // return SDL_FALSE;
+    return this->isGrounded;
 }
 
-SDL_bool Player::IsColliding(std::array<std::array<GameObject *, 100>, 10> &level)
+// Player
+bool Player::IsColliding(int px, int py)
 {
     GameState *gameState = GameState::getInstance();
     TileManager *tileManager = TileManager::getInstance();
-    if (!tileManager)
+    LevelManager *levelManager = LevelManager::getInstance();
+
+    if (!(tileManager && levelManager))
     {
-        SDL_Log("Tile manager not set\n");
-        return SDL_FALSE;
+        SDL_Log("Tile manager or level manager not set\n");
+        return false;
     }
-    int currX = this->rect.x;
-    int currY = this->rect.y;
-    int col = currX / 16;
-    int row = currY / 16;
-    int tileIndex = 0;
-    SDL_Rect *other;
+
+    Level *level = levelManager->getLevel(gameState->getCurrentLevel());
+
     int tileId = 0;
-    int x = 0;
-    int y = 0;
+    int gridX = py / 16;
+    int gridY = px / 16;
+    bool res = true;
 
-    if (this->currDir == DIR::LEFT)
-    {
-        x = row;
-        y = col - 1;
-    }
-    else if (this->currDir == DIR::RIGHT)
-    {
-        x = row;
-        y = col + 1;
-    }
-    else if (this->currDir == DIR::UP)
-    {
-        x = row - 1;
-        y = col;
-    }
-    else if (this->currDir == DIR::DOWN)
-    {
-        x = row + 1;
-        y = col;
-    }
+    if (gridX < 0 || gridX > 10 || gridY < 0 || gridY > 99)
+        return res;
 
-    if (x < 0 || y < 0)
-        return SDL_FALSE;
-
-    tileId = level[x][y]->GetTileId();
-    other = level[x][y]->GetRectangle();
+    SDL_Rect *rect = level->QueryCell(gridX, gridY);
+    tileId = level->GetLevel()[gridX][gridY]->GetTileId();
 
     switch (tileId)
     {
     case StaticObject::EMPTY:
+        res = true;
         break;
     case StaticObject::WALL_BLUE:
     case StaticObject::WALL_RED:
@@ -325,40 +341,68 @@ SDL_bool Player::IsColliding(std::array<std::array<GameObject *, 100>, 10> &leve
     case StaticObject::DIVIDER_PURPLE:
     case StaticObject::PIPE_RIGHT:
     case StaticObject::PIPE_DOWN:
-        if (SDL_HasIntersection(&(this->rect), other))
-        {
-            std::cout << "Collision occured with a wall" << std::endl;
-        }
+        res = false;
+        break;
+    case StaticObject::POINT_PURPLE:
+        gameState->addScore(50);
+        level->ClearCell(gridX, gridY);
         break;
     case StaticObject::POINT_BLUE:
         gameState->addScore(100);
-        level[x][y]->SetTileId(StaticObject::EMPTY);
+        level->ClearCell(gridX, gridY);
         break;
     case StaticObject::POINT_RED:
         gameState->addScore(200);
-        level[x][y]->SetTileId(StaticObject::EMPTY);
-        break;
-    case StaticObject::POINT_PURPLE:
-        gameState->addScore(300);
-        level[x][y]->SetTileId(StaticObject::EMPTY);
+        level->ClearCell(gridX, gridY);
         break;
     case StaticObject::POINT_RING:
-        gameState->addScore(400);
-        level[x][y]->SetTileId(StaticObject::EMPTY);
+        gameState->addScore(300);
+        level->ClearCell(gridX, gridY);
         break;
     case StaticObject::POINT_WAND:
         gameState->addScore(500);
-        level[x][y]->SetTileId(StaticObject::EMPTY);
+        level->ClearCell(gridX, gridY);
         break;
     case StaticObject::POINT_CROWN:
         gameState->addScore(800);
-        level[x][y]->SetTileId(StaticObject::EMPTY);
+        level->ClearCell(gridX, gridY);
+        break;
+    case StaticObject::TROPHY_1:
+    case StaticObject::TROPHY_2:
+    case StaticObject::TROPHY_3:
+    case StaticObject::TROPHY_4:
+    case StaticObject::TROPHY_5:
+        gameState->SetGotTrophy(true);
+        level->ClearCell(gridX, gridY);
+        break;
+    case StaticObject::JETPACK:
+        gameState->SetGotJetpack(true);
+        level->ClearCell(gridX, gridY);
+        break;
+    case StaticObject::GUN:
+        gameState->SetGotGun(true);
+        level->ClearCell(gridX, gridY);
         break;
     default:
         break;
     }
 
-    return SDL_FALSE;
+    return res;
+}
+
+void Player::IsColliding()
+{
+
+    this->collision_point[0] = this->IsColliding(this->rect.x + 2, this->rect.y - 1);   // Top left
+    this->collision_point[1] = this->IsColliding(this->rect.x + 12, this->rect.y - 1);  // Top right
+    this->collision_point[2] = this->IsColliding(this->rect.x + 13, this->rect.y + 4);  // Right side above mid
+    this->collision_point[3] = this->IsColliding(this->rect.x + 13, this->rect.y + 12); // Right side below mid
+    this->collision_point[4] = this->IsColliding(this->rect.x + 12, this->rect.y + 16); // Right foot
+    this->collision_point[5] = this->IsColliding(this->rect.x + 3, this->rect.y + 16);  // Left foor
+    this->collision_point[6] = this->IsColliding(this->rect.x + 2, this->rect.y + 12);  // Left side below mid
+    this->collision_point[7] = this->IsColliding(this->rect.x + 2, this->rect.y + 4);   // Left side above mid
+
+    this->isGrounded = !(this->collision_point[4] && this->collision_point[5]);
 }
 
 void Player::Gravity()
@@ -367,7 +411,7 @@ void Player::Gravity()
     {
         jumpHeight += gravity;
         y += jumpHeight + gravity;
-        if (jumpHeight > 0)
+        if (jumpHeight > 0 || !canMoveUp())
         {
             inJump = false;
             jumpHeight = -6;
@@ -376,10 +420,8 @@ void Player::Gravity()
     else
     {
         inJump = false;
-        if (y + dy > 99 * 16)
-            return;
-
-        y += dy;
+        if (y + dy < 99 * 16)
+            y += dy;
     }
     this->SetRectPosition(x, y);
 }
@@ -426,8 +468,44 @@ void Player::SetDown()
 {
     currDir = DIR::DOWN;
 }
+bool Player::canMoveDown()
+{
+    return this->collision_point[4] && this->collision_point[5];
+}
+
+bool Player::canMoveUp()
+{
+    return this->collision_point[0] && this->collision_point[1];
+}
+
+bool Player::canMoveLeft()
+{
+    return this->collision_point[6] && this->collision_point[7];
+}
+
+bool Player::canMoveRight()
+{
+    return this->collision_point[2] && this->collision_point[3];
+}
 
 int Player::GetDirection()
 {
-    return currDir;
+    return this->currDir;
+}
+
+void Player::PrintRectCoordinates()
+{
+    SDL_Log("Player at X: %d , Y: %d\n", this->rect.x / 16, this->rect.y / 16);
+}
+
+void Player::IncreaseSpeed()
+{
+    this->dx = 4;
+    this->dy = 4;
+}
+
+void Player::ResetSpeed()
+{
+    this->dx = 2;
+    this->dy = 2;
 }

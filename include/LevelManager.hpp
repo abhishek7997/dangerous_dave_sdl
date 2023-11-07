@@ -4,7 +4,7 @@
 #include <SDL.h>
 #include "Level.hpp"
 #include "TileManager.hpp"
-#include "../src/tile_types.cpp"
+#include "tile_types.hpp"
 
 class LevelManager
 {
