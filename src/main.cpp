@@ -71,6 +71,7 @@ void HandleUpdate()
             level->SetOffset(4 * 20 * 16);
         }
     }
+    gameState->GetPlayer()->UpdateFrame();
     // gameState->GetPlayer()->PrintRectCoordinates();
     // std::cout << "Player X: " << gameState->GetPlayer()->GetRectangle()->x << " Y: " << gameState->GetPlayer()->GetRectangle()->y << std::endl;
 }

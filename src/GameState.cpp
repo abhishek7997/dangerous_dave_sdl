@@ -229,4 +229,14 @@ void GameState::Reset()
     this->gotGun = false;
 }
 
+void GameState::DecreaseLives()
+{
+    this->lives--;
+}
+
+void GameState::NextLevel()
+{
+    this->currentLevel = std::min(9, this->currentLevel + 1);
+}
+
 GameState *GameState::instance = nullptr;

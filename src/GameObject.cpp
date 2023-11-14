@@ -1,4 +1,5 @@
 #include <array>
+#include <chrono>
 #include "GameState.hpp"
 #include "LevelManager.hpp"
 
@@ -10,7 +11,7 @@ void IGameObject::Render(SDL_Renderer *renderer, const int &offset) const
         SDL_Log("TileManager not loaded");
         return;
     }
-    SDL_Texture *texture = tileManager->GetTileById(tileId);
+    SDL_Texture *texture = tileManager->GetTileById(this->tileId);
     if (!texture)
     {
         SDL_Log("Could not query texture :( %s", SDL_GetError());
@@ -22,26 +23,10 @@ void IGameObject::Render(SDL_Renderer *renderer, const int &offset) const
 
     SDL_RenderCopy(renderer, texture, NULL, &dst);
 
-    if (tileId != 0)
-    {
-        SDL_SetRenderDrawColor(renderer, 0xff, 0x0, 0xff, 0xff);
-        SDL_RenderDrawRect(renderer, &dst);
-    }
-
-    // if (tileId >= 53 && tileId <= 82)
+    // if (this->tileId != 0)
     // {
-    //     SDL_Rect dst2 = {this->rect.x - offset + 4, this->rect.y + 16, this->rect.w, this->rect.h};
-    //     SDL_SetRenderDrawColor(renderer, 0xff, 0x00, 0x00, 0xff);
-    //     SDL_RenderDrawRect(renderer, &dst2);
-    //     SDL_Rect dst3 = {this->rect.x - offset - 4, this->rect.y + 16, this->rect.w, this->rect.h};
-    //     SDL_SetRenderDrawColor(renderer, 0x00, 0xff, 0x00, 0xff);
-    //     SDL_RenderDrawRect(renderer, &dst3);
-    //     SDL_Rect dst4 = {this->rect.x - offset, this->rect.y + 4 + 16, this->rect.w, this->rect.h};
-    //     SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xff, 0xff);
-    //     SDL_RenderDrawRect(renderer, &dst4);
-    //     SDL_Rect dst5 = {this->rect.x - offset, this->rect.y - 4 + 16, this->rect.w, this->rect.h};
-    //     SDL_SetRenderDrawColor(renderer, 0xff, 0xdd, 0xee, 0xff);
-    //     SDL_RenderDrawRect(renderer, &dst5);
+    //     SDL_SetRenderDrawColor(renderer, 0xaa, 0x0, 0xff, 0xff);
+    //     SDL_RenderDrawRect(renderer, &dst);
     // }
 };
 
@@ -77,9 +62,11 @@ void IGameObject::SetTileId(const int &tileId)
     if (tileId < 0 || tileId > 157)
     {
         this->tileId = 0;
+        this->startTileId = tileId;
         return;
     }
     this->tileId = tileId;
+    this->startTileId = tileId;
 }
 
 // GameObject
@@ -97,7 +84,36 @@ GameObject::GameObject(const int &x, const int &y, const int &tileId)
     }
     SetRectPosition(x, y);
     SetRectDimension(tileWidth, tileHeight);
-    this->tileId = tileId;
+    SetTileId(tileId);
+}
+
+void GameObject::UpdateFrame(const int salt)
+{
+    int mod = 1;
+    switch (this->startTileId)
+    {
+    case 6:
+        mod = 4;
+        break;
+    case 10:
+        mod = 5;
+        break;
+    case 25:
+        mod = 4;
+        break;
+    case 36:
+        mod = 5;
+        break;
+    case 129:
+        mod = 4;
+        break;
+    default:
+        return;
+    }
+
+    // std::cout << "Old tile id: " << this->tileId << std::endl;
+    this->tileId = this->startTileId + ((salt + (SDL_GetTicks() / 120)) % mod);
+    // std::cout << "Updated tile id: " << this->tileId << std::endl;
 }
 
 void GameObject::SetPosition(const int &x, const int &y)
@@ -118,10 +134,12 @@ MonsterObject::MonsterObject(const int &x, const int &y, const int &tileId)
         return;
     }
 
+    this->startX = x;
+    this->startY = y;
     SetRectPosition(x, y);
     SetRectDimension(tileWidth, tileHeight);
     SetTileId(tileId);
-    this->movements = {{4, 2}, {6, 4}, {8, 6}, {10, 8}, {12, 10}, {12, 12}, {12, 10}, {12, 8}, {12, 6}, {12, 4}, {12, 2}, {10, 2}, {8, 2}, {6, 2}};
+    this->movements = {{0, 12}, {1, 13}, {2, 14}, {3, 13}, {4, 12}, {5, 12}, {6, 13}, {7, 13}, {8, 13}, {9, 12}, {10, 12}, {10, 11}, {9, 11}, {8, 10}, {7, 9}, {6, 9}, {5, 10}, {4, 11}, {3, 11}, {2, 12}, {1, 12}, {0, 12}};
     this->size = this->movements.size();
     this->iterator = this->movements.begin();
 }
@@ -130,8 +148,8 @@ void MonsterObject::Move()
 {
     if (this->iterator == this->movements.end())
         this->iterator = this->movements.begin();
-    int x = (*(this->iterator)).first * 3;
-    int y = (*(this->iterator)).second * 3;
+    int x = this->startX + (*(this->iterator)).first * 5;
+    int y = this->startY + (*(this->iterator)).second * 5;
     SetRectPosition(x, y);
     this->iterator++;
 }
@@ -141,68 +159,81 @@ void MonsterObject::SetMovements(std::vector<std::pair<int, int>> movements)
     this->movements = movements;
 }
 
-SDL_bool MonsterObject::IsColliding(std::array<std::array<GameObject *, 100>, 10> &level)
+SDL_bool MonsterObject::IsColliding()
 {
     TileManager *tileManager = TileManager::getInstance();
-    if (!tileManager)
+    LevelManager *levelManager = LevelManager::getInstance();
+
+    if (!(tileManager && levelManager))
     {
         SDL_Log("Tile manager not set\n");
         return SDL_FALSE;
     }
+
+    Level *level = levelManager->GetCurrentLevel();
+
     int currX = this->rect.x;
     int currY = this->rect.y;
     int cellX = currX / 16;
     int cellY = currY / 16;
     int tileIndex = 0;
+    Player *player = GameState::getInstance()->GetPlayer();
+    SDL_Rect *playerRect = player->GetRectangle();
 
-    for (int i = cellX; i <= cellX + 1; i++)
+    if (SDL_HasIntersection(&this->rect, playerRect))
     {
-        for (int j = cellY; j <= cellY + 1; j++)
-        {
-            if (i < 0 || j < 0 || i > 10 || j > 100)
-                continue;
-            GameObject *gameObject = level[i][j];
-            SDL_Rect *rect = gameObject->GetRectangle();
-
-            // std::cout << "I: " << i << " J: " << j << std::endl;
-            // std::cout << "X: " << i << " J: " << j << std::endl;
-            // std::cout << "Tile ID: " << gameObject->GetTileId() << std::endl;
-
-            switch (gameObject->GetTileId())
-            {
-            case PlayerObject::PLAYER_BULLET_L:
-            case PlayerObject::PLAYER_BULLET_R:
-                if (SDL_HasIntersection(&(this->rect), rect))
-                {
-                    std::cout << "Kill only the monster by bullet, left/right" << std::endl;
-                }
-                break;
-            case PlayerObject::PLAYER_FRONT:
-            case PlayerObject::PLAYER_WALK_L_1:
-            case PlayerObject::PLAYER_WALK_L_2:
-            case PlayerObject::PLAYER_WALK_L_3:
-            case PlayerObject::PLAYER_WALK_R_1:
-            case PlayerObject::PLAYER_WALK_R_2:
-            case PlayerObject::PLAYER_WALK_R_3:
-            case PlayerObject::PLAYER_CLIMB_1:
-            case PlayerObject::PLAYER_CLIMB_2:
-            case PlayerObject::PLAYER_CLIMB_3:
-            case PlayerObject::PLAYER_JETPACK_L_1:
-            case PlayerObject::PLAYER_JETPACK_L_2:
-            case PlayerObject::PLAYER_JETPACK_L_3:
-            case PlayerObject::PLAYER_JETPACK_R_1:
-            case PlayerObject::PLAYER_JETPACK_R_2:
-            case PlayerObject::PLAYER_JETPACK_R_3:
-                if (SDL_HasIntersection(&(this->rect), rect))
-                {
-                    std::cout << "Kill both the player and monster" << std::endl;
-                }
-                break;
-            default:
-                break;
-            }
-        }
+        player->PlayDead();
+        return SDL_TRUE;
     }
+
+    // for (int i = cellX; i <= cellX + 1; i++)
+    // {
+    //     for (int j = cellY; j <= cellY + 1; j++)
+    //     {
+    //         if (i < 0 || j < 0 || i > 10 || j > 100)
+    //             continue;
+    //         GameObject *gameObject = level[i][j];
+    //         SDL_Rect *rect = gameObject->GetRectangle();
+
+    //         // std::cout << "I: " << i << " J: " << j << std::endl;
+    //         // std::cout << "X: " << i << " J: " << j << std::endl;
+    //         // std::cout << "Tile ID: " << gameObject->GetTileId() << std::endl;
+
+    //         switch (gameObject->GetTileId())
+    //         {
+    //         case PlayerObject::PLAYER_BULLET_L:
+    //         case PlayerObject::PLAYER_BULLET_R:
+    //             if (SDL_HasIntersection(&(this->rect), rect))
+    //             {
+    //                 std::cout << "Kill only the monster by bullet, left/right" << std::endl;
+    //             }
+    //             break;
+    //         case PlayerObject::PLAYER_FRONT:
+    //         case PlayerObject::PLAYER_WALK_L_1:
+    //         case PlayerObject::PLAYER_WALK_L_2:
+    //         case PlayerObject::PLAYER_WALK_L_3:
+    //         case PlayerObject::PLAYER_WALK_R_1:
+    //         case PlayerObject::PLAYER_WALK_R_2:
+    //         case PlayerObject::PLAYER_WALK_R_3:
+    //         case PlayerObject::PLAYER_CLIMB_1:
+    //         case PlayerObject::PLAYER_CLIMB_2:
+    //         case PlayerObject::PLAYER_CLIMB_3:
+    //         case PlayerObject::PLAYER_JETPACK_L_1:
+    //         case PlayerObject::PLAYER_JETPACK_L_2:
+    //         case PlayerObject::PLAYER_JETPACK_L_3:
+    //         case PlayerObject::PLAYER_JETPACK_R_1:
+    //         case PlayerObject::PLAYER_JETPACK_R_2:
+    //         case PlayerObject::PLAYER_JETPACK_R_3:
+    //             if (SDL_HasIntersection(&(this->rect), rect))
+    //             {
+    //                 std::cout << "Kill both the player and monster" << std::endl;
+    //             }
+    //             break;
+    //         default:
+    //             break;
+    //         }
+    //     }
+    // }
 }
 
 Player::Player()
@@ -214,14 +245,22 @@ Player::Player()
     this->SetTileId(PlayerObject::PLAYER_FRONT);
 }
 
+Player::Player(const int &x, const int &y)
+{
+    this->SetRectDimension(16, 16);
+    this->SetRectPosition(x, y);
+    this->SetTileId(PlayerObject::PLAYER_FRONT);
+}
+
 void Player::MoveLeft()
 {
     if (x - dx < 1)
         return;
 
     x -= dx;
-    SetLeft();
+    this->SetLeft();
     this->SetRectPosition(x, y);
+    this->player_tick++;
 }
 
 void Player::MoveRight()
@@ -230,8 +269,9 @@ void Player::MoveRight()
         return;
 
     x += dx;
-    SetRight();
+    this->SetRight();
     this->SetRectPosition(x, y);
+    this->player_tick++;
 }
 
 void Player::MoveUp()
@@ -240,8 +280,9 @@ void Player::MoveUp()
         return;
 
     y -= dy;
-    SetUp();
+    this->SetUp();
     this->SetRectPosition(x, y);
+    this->player_tick++;
 }
 
 void Player::MoveDown()
@@ -250,50 +291,14 @@ void Player::MoveDown()
         return;
 
     y += dy;
-    SetDown();
+    this->SetDown();
     this->SetRectPosition(x, y);
+    this->player_tick++;
 }
 
 // bool Player::IsGrounded(TileManager *const &tileManager, std::array<std::array<GameObject *, 100>, 10> &level)
 bool Player::IsGrounded()
 {
-    // int currX = this->rect.x;
-    // int currY = this->rect.y;
-
-    // int minCol = currX / 16;
-    // int maxCol = (currX + this->rect.w) / 16;
-    // int row = currY / 16;
-
-    // if (row >= 10)
-    //     return SDL_TRUE;
-
-    // for (int col = minCol; col <= maxCol; ++col)
-    // {
-    //     int tileId = level[row + 1][col]->GetTileId();
-
-    //     switch (tileId)
-    //     {
-    //     case StaticObject::WALL_BLUE:
-    //     case StaticObject::WALL_RED:
-    //     case StaticObject::WALL_HALF_1:
-    //     case StaticObject::WALL_HALF_2:
-    //     case StaticObject::WALL_HALF_3:
-    //     case StaticObject::WALL_HALF_4:
-    //     case StaticObject::WALL_METAL:
-    //     case StaticObject::WALL_MUD:
-    //     case StaticObject::WALL_MUD_2:
-    //     case StaticObject::WALL_LIGHT_BLUE:
-    //     case StaticObject::DIVIDER_PURPLE:
-    //     case StaticObject::PIPE_RIGHT:
-    //     case StaticObject::PIPE_DOWN:
-    //         return SDL_TRUE;
-    //         break;
-    //     default:
-
-    //         break;
-    //     }
-    // }
-    // return SDL_FALSE;
     return this->isGrounded;
 }
 
@@ -383,6 +388,28 @@ bool Player::IsColliding(int px, int py)
         gameState->SetGotGun(true);
         level->ClearCell(gridX, gridY);
         break;
+    case StaticObject::DOOR:
+        if (gameState->GotTrophy())
+        {
+            this->ResetSpeed();
+            levelManager->NextLevel();
+        }
+        break;
+    case StaticObject::FIRE_1:
+    case StaticObject::FIRE_2:
+    case StaticObject::FIRE_3:
+    case StaticObject::FIRE_4:
+    case StaticObject::WATER_1:
+    case StaticObject::WATER_2:
+    case StaticObject::WATER_3:
+    case StaticObject::WATER_4:
+    case StaticObject::WEED_1:
+    case StaticObject::WEED_2:
+    case StaticObject::WEED_3:
+    case StaticObject::WEED_4:
+        res = false;
+        this->PlayDead();
+        break;
     default:
         break;
     }
@@ -407,6 +434,8 @@ void Player::IsColliding()
 
 void Player::Gravity()
 {
+    if (this->isDead)
+        return;
     if (JumpState())
     {
         jumpHeight += gravity;
@@ -451,41 +480,42 @@ void Player::Jump()
 
 void Player::SetLeft()
 {
-    currDir = DIR::LEFT;
+    this->currDir = DIR::LEFT;
 }
 
 void Player::SetRight()
 {
-    currDir = DIR::RIGHT;
+    this->currDir = DIR::RIGHT;
 }
 
 void Player::SetUp()
 {
-    currDir = DIR::UP;
+    this->currDir = DIR::UP;
 }
 
 void Player::SetDown()
 {
-    currDir = DIR::DOWN;
+    this->currDir = DIR::DOWN;
 }
+
 bool Player::canMoveDown()
 {
-    return this->collision_point[4] && this->collision_point[5];
+    return this->collision_point[4] && this->collision_point[5] && !this->isDead;
 }
 
 bool Player::canMoveUp()
 {
-    return this->collision_point[0] && this->collision_point[1];
+    return this->collision_point[0] && this->collision_point[1] && !this->isDead;
 }
 
 bool Player::canMoveLeft()
 {
-    return this->collision_point[6] && this->collision_point[7];
+    return this->collision_point[6] && this->collision_point[7] && !this->isDead;
 }
 
 bool Player::canMoveRight()
 {
-    return this->collision_point[2] && this->collision_point[3];
+    return this->collision_point[2] && this->collision_point[3] && !this->isDead;
 }
 
 int Player::GetDirection()
@@ -508,4 +538,50 @@ void Player::ResetSpeed()
 {
     this->dx = 2;
     this->dy = 2;
+}
+
+void Player::UpdateFrame()
+{
+    if (this->isDead)
+    {
+        if (this->dead_timer == 0)
+        {
+            this->isDead = false;
+            this->tileId = this->startTileId;
+            this->dead_timer = 70;
+            LevelManager::getInstance()->ResetPlayerPos();
+            LevelManager::getInstance()->ResetOffset();
+            GameState::getInstance()->DecreaseLives();
+        }
+        else
+        {
+            this->tileId = MiscObject::DEATH_1 + ((this->dead_timer / 5) % 4);
+            this->dead_timer--;
+        }
+    }
+    else if (this->inJump || !this->IsGrounded())
+        if (this->GetDirection() == DIR::UNSET)
+            this->tileId = PlayerObject::PLAYER_FRONT;
+        else if (GameState::getInstance()->jetpackState())
+        {
+            this->tileId = this->GetDirection() == DIR::RIGHT ? PlayerObject::PLAYER_JETPACK_R_1 + (this->player_tick / 3) % 2 : PlayerObject::PLAYER_JETPACK_L_1 + (this->player_tick / 3) % 2;
+        }
+        else
+        {
+            this->tileId = this->GetDirection() == DIR::RIGHT ? PlayerObject::PLAYER_JUMP_R : PlayerObject::PLAYER_JUMP_L;
+        }
+    else
+        this->tileId = this->startTileId + (this->player_tick / 3) % 3;
+}
+
+void Player::SetPlayerPos(int x, int y)
+{
+    this->x = x;
+    this->y = y;
+    this->SetRectPosition(this->x, this->y);
+}
+
+void Player::PlayDead()
+{
+    this->isDead = true;
 }

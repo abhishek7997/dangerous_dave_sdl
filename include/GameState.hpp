@@ -31,6 +31,10 @@ public:
     bool GotJetpack();
     bool GotGun();
     void Reset();
+    void NextLevel();
+    void SetPlayerX();
+    void SetPlayerY();
+    void DecreaseLives();
 
 protected:
     static GameState *instance;

@@ -16,6 +16,10 @@ public:
     static LevelManager *getInstance();
     void SetRenderer(SDL_Renderer *renderer);
     Level *getLevel(const int &index);
+    void NextLevel();
+    void ResetPlayerPos();
+    void ResetOffset();
+    Level *GetCurrentLevel();
 
 protected:
     static LevelManager *instance;

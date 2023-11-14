@@ -58,4 +58,39 @@ LevelManager::LevelManager()
     // Initialize();
 }
 
+void LevelManager::NextLevel()
+{
+    GameState *gameState = GameState::getInstance();
+    gameState->Reset();
+    gameState->NextLevel();
+
+    const int idx = gameState->getCurrentLevel();
+
+    const int x = m_Levels[idx]->GetPlayerStartX();
+    const int y = m_Levels[idx]->GetPlayerStartY();
+
+    gameState->GetPlayer()->SetPlayerPos(x, y);
+}
+
+void LevelManager::ResetPlayerPos()
+{
+    GameState *gameState = GameState::getInstance();
+    int lvl = gameState->getCurrentLevel();
+    Level *level = this->getLevel(lvl);
+    const int x = level->GetPlayerStartX();
+    const int y = level->GetPlayerStartY();
+    gameState->GetPlayer()->SetPlayerPos(x, y);
+}
+
+void LevelManager::ResetOffset()
+{
+    int lvl = GameState::getInstance()->getCurrentLevel();
+    this->getLevel(lvl)->SetOffset(0);
+}
+
+Level *LevelManager::GetCurrentLevel()
+{
+    return this->getLevel(GameState::getInstance()->getCurrentLevel());
+}
+
 LevelManager *LevelManager::instance = nullptr;
