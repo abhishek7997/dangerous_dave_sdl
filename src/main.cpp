@@ -21,7 +21,7 @@ void HandleRendering()
 void HandleUpdate()
 {
     Level *level = levelManager->getLevel(gameState->getCurrentLevel());
-    if (gameState->GetPlayer()->IsGrounded(tileManager, level->GetLevel()) == SDL_FALSE)
+    if (!gameState->GetPlayer()->IsGrounded())
     {
         gameState->applyGravity();
     }
@@ -71,42 +71,43 @@ void HandleUpdate()
             level->SetOffset(4 * 20 * 16);
         }
     }
-    std::cout << "Player X: " << gameState->GetPlayer()->GetRectangle()->x << " Y: " << gameState->GetPlayer()->GetRectangle()->y << std::endl;
-
-    // If player collides with monsters, player dies, camera (level offset) is reset, player starting position is reset
-    if (gameState->GetPlayer()->IsColliding(level->GetLevel()) == SDL_TRUE)
-    {
-        std::cout << "Collided with something" << std::endl;
-    }
+    gameState->GetPlayer()->UpdateFrame();
+    // gameState->GetPlayer()->PrintRectCoordinates();
+    // std::cout << "Player X: " << gameState->GetPlayer()->GetRectangle()->x << " Y: " << gameState->GetPlayer()->GetRectangle()->y << std::endl;
 }
 
 void HandleEvents()
 {
     Level *level = levelManager->getLevel(gameState->getCurrentLevel());
-    gameState->GetPlayer()
-        ->GetJumpTime();
+    gameState->GetPlayer()->GetJumpTime();
     const Uint8 *keystates = SDL_GetKeyboardState(NULL);
+
+    gameState->GetPlayer()->IsColliding();
+
     if (keystates[SDL_SCANCODE_RIGHT] && keystates[SDL_SCANCODE_UP])
     {
-        gameState->moveRight();
-        if (gameState->GetPlayer()->IsGrounded(tileManager, level->GetLevel()) == SDL_TRUE)
+        if (gameState->GetPlayer()->canMoveRight())
         {
+            gameState->moveRight();
             gameState->jump();
+            gameState->GetPlayer()->SetTileId(PlayerObject::PLAYER_JUMP_R);
         }
-        gameState->GetPlayer()->SetTileId(PlayerObject::PLAYER_JUMP_R);
     }
     else if (keystates[SDL_SCANCODE_LEFT] && keystates[SDL_SCANCODE_UP])
     {
-        gameState->moveLeft();
-        if (gameState->GetPlayer()->IsGrounded(tileManager, level->GetLevel()) == SDL_TRUE)
+        if (gameState->GetPlayer()->canMoveLeft())
         {
+            gameState->moveLeft();
             gameState->jump();
+            gameState->GetPlayer()->SetTileId(PlayerObject::PLAYER_JUMP_L);
         }
-        gameState->GetPlayer()->SetTileId(PlayerObject::PLAYER_JUMP_L);
     }
     else if (keystates[SDL_SCANCODE_RIGHT])
     {
-        gameState->moveRight();
+        if (gameState->GetPlayer()->canMoveRight())
+        {
+            gameState->moveRight();
+        }
         if (gameState->jetpackState())
         {
             gameState->GetPlayer()->SetTileId(PlayerObject::PLAYER_JETPACK_R_1);
@@ -118,7 +119,10 @@ void HandleEvents()
     }
     else if (keystates[SDL_SCANCODE_LEFT])
     {
-        gameState->moveLeft();
+        if (gameState->GetPlayer()->canMoveLeft())
+        {
+            gameState->moveLeft();
+        }
         if (gameState->jetpackState())
         {
             gameState->GetPlayer()->SetTileId(PlayerObject::PLAYER_JETPACK_L_1);
@@ -132,9 +136,12 @@ void HandleEvents()
     {
         if (gameState->jetpackState())
         {
-            gameState->moveUp();
+            if (gameState->GetPlayer()->canMoveUp())
+            {
+                gameState->moveUp();
+            }
         }
-        else if (gameState->GetPlayer()->IsGrounded(tileManager, level->GetLevel()) == SDL_TRUE)
+        else if (gameState->GetPlayer()->IsGrounded())
         {
             gameState->jump();
             gameState->GetPlayer()->SetTileId(PlayerObject::PLAYER_JUMP_R);
@@ -144,7 +151,10 @@ void HandleEvents()
     {
         if (gameState->jetpackState())
         {
-            gameState->moveDown();
+            if (gameState->GetPlayer()->canMoveDown())
+            {
+                gameState->moveDown();
+            }
         }
     }
 
@@ -161,11 +171,14 @@ void HandleEvents()
             {
             case SDL_SCANCODE_LALT:
             case SDL_SCANCODE_RALT:
-                gameState->toggleJetpack();
-                if (gameState->jetpackState())
-                    gameState->GetPlayer()->SetTileId(PlayerObject::PLAYER_JETPACK_L_1);
-                else
-                    gameState->GetPlayer()->SetTileId(PlayerObject::PLAYER_FRONT);
+                if (gameState->GotJetpack())
+                {
+                    gameState->toggleJetpack();
+                    if (gameState->jetpackState())
+                        gameState->GetPlayer()->SetTileId(PlayerObject::PLAYER_JETPACK_L_1);
+                    else
+                        gameState->GetPlayer()->SetTileId(PlayerObject::PLAYER_FRONT);
+                }
                 break;
             }
         }

@@ -33,7 +33,8 @@ void GameState::applyGravity()
 
 void GameState::jump()
 {
-    this->player->Jump();
+    if (this->player->IsGrounded() && this->player->canMoveUp())
+        this->player->Jump();
 }
 
 void GameState::playerAnimation()
@@ -52,6 +53,14 @@ Player *&GameState::GetPlayer()
 
 void GameState::toggleJetpack()
 {
+    if (jetpackActivated)
+    {
+        this->player->ResetSpeed();
+    }
+    else
+    {
+        this->player->IncreaseSpeed();
+    }
     jetpackActivated = !jetpackActivated;
 }
 
@@ -142,7 +151,7 @@ void GameState::RenderStates()
     }
 
     // Display jetpack
-    if (jetpackActivated)
+    if (gotJetpack)
     {
         texture = TileManager::getInstance()->GetTileById(MiscObject::TEXT_JETPACK);
         dst = {0, 185, 62, 11};
@@ -169,6 +178,65 @@ void GameState::RenderStates()
         SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
         SDL_RenderCopy(renderer, texture, NULL, &dst);
     }
+
+    // Display Go thru the door text
+    if (gotTrophy)
+    {
+        texture = TileManager::getInstance()->GetTileById(MiscObject::TEXT_CANEXIT);
+        dst = {62 + 8, 185 + 16, 176, 14};
+        SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+        SDL_RenderCopy(renderer, texture, NULL, &dst);
+    }
+}
+
+void GameState::SetGotTrophy(bool status)
+{
+    this->gotTrophy = status;
+}
+
+void GameState::SetGotJetpack(bool status)
+{
+    this->gotJetpack = status;
+}
+
+void GameState::SetGotGun(bool status)
+{
+    this->gotGun = status;
+}
+
+bool GameState::GotGun()
+{
+    return this->gotGun;
+}
+
+bool GameState::GotTrophy()
+{
+    return this->gotTrophy;
+}
+
+bool GameState::GotJetpack()
+{
+    return this->gotJetpack;
+}
+
+void GameState::Reset()
+{
+    this->canClimb = false;
+    this->gotJetpack = false;
+    this->jetpackActivated = false;
+    this->gotTrophy = false;
+    this->canClimb = false;
+    this->gotGun = false;
+}
+
+void GameState::DecreaseLives()
+{
+    this->lives--;
+}
+
+void GameState::NextLevel()
+{
+    this->currentLevel = std::min(9, this->currentLevel + 1);
 }
 
 GameState *GameState::instance = nullptr;

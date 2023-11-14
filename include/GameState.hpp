@@ -24,6 +24,17 @@ public:
     static GameState *getInstance(SDL_Renderer *renderer);
     void addScore(int score);
     void RenderStates();
+    void SetGotTrophy(bool);
+    void SetGotJetpack(bool);
+    void SetGotGun(bool);
+    bool GotTrophy();
+    bool GotJetpack();
+    bool GotGun();
+    void Reset();
+    void NextLevel();
+    void SetPlayerX();
+    void SetPlayerY();
+    void DecreaseLives();
 
 protected:
     static GameState *instance;
@@ -38,8 +49,8 @@ private:
     int lives = 3;
     int score = 0;
     int currentLevel = 0;
-    int tileOffset = 0;
 
+    bool gotJetpack = false;
     bool jetpackActivated = false;
     bool gotTrophy = false;
     bool canClimb = false;

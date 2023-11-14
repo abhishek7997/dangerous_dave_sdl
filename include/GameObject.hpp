@@ -5,7 +5,7 @@
 #include <utility>
 #include <SDL.h>
 #include "TileManager.hpp"
-#include "../src/tile_types.cpp"
+#include "tile_types.hpp"
 
 class IGameObject
 {
@@ -21,6 +21,7 @@ public:
 protected:
     SDL_Rect rect;
     int tileId;
+    int startTileId;
 };
 
 class GameObject : public IGameObject
@@ -29,6 +30,7 @@ public:
     GameObject() = delete;
     GameObject(const int &x, const int &y, const int &tileId);
     void SetPosition(const int &x, const int &y);
+    void UpdateFrame(const int salt);
 };
 
 class MonsterObject : public IGameObject
@@ -38,25 +40,29 @@ public:
     MonsterObject(const int &x, const int &y, const int &tileId);
     void Move();
     void SetMovements(std::vector<std::pair<int, int>> movements);
-    SDL_bool IsColliding(std::array<std::array<GameObject *, 100>, 10> &level);
+    SDL_bool IsColliding();
 
 private:
     std::vector<std::pair<int, int>> movements;
     size_t size;
     std::vector<std::pair<int, int>>::iterator iterator;
+    int startX = 0;
+    int startY = 0;
 };
 
 class Player : public IGameObject
 {
 public:
     Player();
+    Player(const int &x, const int &y);
     void MoveLeft();
     void MoveRight();
     void MoveUp();
     void MoveDown();
-    SDL_bool IsGrounded(TileManager *const &tileManager, std::array<std::array<GameObject *, 100>, 10> &level);
+    bool IsGrounded();
 
-    SDL_bool IsColliding(std::array<std::array<GameObject *, 100>, 10> &level);
+    bool IsColliding(int x, int y);
+    void IsColliding();
     void Gravity();
     void GetJumpTime();
     bool JumpState();
@@ -66,16 +72,37 @@ public:
     void SetUp();
     void SetDown();
     int GetDirection();
+    bool canMoveDown();
+    bool canMoveUp();
+    bool canMoveLeft();
+    bool canMoveRight();
+    bool canClimb();
+    void PrintRectCoordinates();
+    void IncreaseSpeed();
+    void ResetSpeed();
+    void UpdateFrame();
+    void SetPlayerPos(int x, int y);
+    void PlayDead();
 
 private:
     int x, y;
     float gravity = 0.5f;
     int dx = 2;
     int dy = 2;
-    int currDir = 0;
+    int currDir = DIR::UNSET;
+    bool can_move_left = true;
+    bool can_move_right = true;
+    bool can_move_up = true;
+    bool can_move_down = true;
+    bool isGrounded = false;
+    bool climb = false;
+    bool isDead = false;
 
+    uint32_t player_tick = 0;
+    uint32_t dead_timer = 70;
     bool inJump = false;
     double jumpHeight = -6;
     double jumpTimer;
-    double lastJump = 0;
+    double lastJump = 0.0;
+    bool collision_point[8] = {true};
 };

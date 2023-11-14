@@ -4,7 +4,7 @@
 #include <SDL.h>
 #include "Level.hpp"
 #include "TileManager.hpp"
-#include "../src/tile_types.cpp"
+#include "tile_types.hpp"
 
 class LevelManager
 {
@@ -16,6 +16,10 @@ public:
     static LevelManager *getInstance();
     void SetRenderer(SDL_Renderer *renderer);
     Level *getLevel(const int &index);
+    void NextLevel();
+    void ResetPlayerPos();
+    void ResetOffset();
+    Level *GetCurrentLevel();
 
 protected:
     static LevelManager *instance;
