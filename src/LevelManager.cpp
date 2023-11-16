@@ -93,4 +93,9 @@ Level *LevelManager::GetCurrentLevel()
     return this->getLevel(GameState::getInstance()->getCurrentLevel());
 }
 
+int LevelManager::GetCurrentOffset()
+{
+    return this->getLevel(GameState::getInstance()->getCurrentLevel())->GetOffset();
+}
+
 LevelManager *LevelManager::instance = nullptr;

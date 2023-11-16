@@ -3,7 +3,7 @@
 #include "GameState.hpp"
 #include "LevelManager.hpp"
 
-void IGameObject::Render(SDL_Renderer *renderer, const int &offset) const
+void IGameObject::Render(SDL_Renderer *renderer, const int &offset)
 {
     TileManager *tileManager = TileManager::getInstance();
     if (!tileManager)
@@ -111,9 +111,7 @@ void GameObject::UpdateFrame(const int salt)
         return;
     }
 
-    // std::cout << "Old tile id: " << this->tileId << std::endl;
     this->tileId = this->startTileId + ((salt + (SDL_GetTicks() / 120)) % mod);
-    // std::cout << "Updated tile id: " << this->tileId << std::endl;
 }
 
 void GameObject::SetPosition(const int &x, const int &y)
@@ -136,9 +134,9 @@ MonsterObject::MonsterObject(const int &x, const int &y, const int &tileId)
 
     this->startX = x;
     this->startY = y;
-    SetRectPosition(x, y);
-    SetRectDimension(tileWidth, tileHeight);
-    SetTileId(tileId);
+    this->SetRectPosition(x, y);
+    this->SetRectDimension(tileWidth, tileHeight);
+    this->SetTileId(tileId);
     this->movements = {{0, 12}, {1, 13}, {2, 14}, {3, 13}, {4, 12}, {5, 12}, {6, 13}, {7, 13}, {8, 13}, {9, 12}, {10, 12}, {10, 11}, {9, 11}, {8, 10}, {7, 9}, {6, 9}, {5, 10}, {4, 11}, {3, 11}, {2, 12}, {1, 12}, {0, 12}};
     this->size = this->movements.size();
     this->iterator = this->movements.begin();
@@ -154,7 +152,7 @@ void MonsterObject::Move()
     this->iterator++;
 }
 
-void MonsterObject::SetMovements(std::vector<std::pair<int, int>> movements)
+void MonsterObject::SetMovements(const std::vector<std::pair<int, int>> &movements)
 {
     this->movements = movements;
 }
@@ -178,7 +176,7 @@ SDL_bool MonsterObject::IsColliding()
     int cellY = currY / 16;
     int tileIndex = 0;
     Player *player = GameState::getInstance()->GetPlayer();
-    SDL_Rect *playerRect = player->GetRectangle();
+    const SDL_Rect *playerRect = player->GetRectangle();
 
     if (SDL_HasIntersection(&this->rect, playerRect))
     {
@@ -186,54 +184,47 @@ SDL_bool MonsterObject::IsColliding()
         return SDL_TRUE;
     }
 
-    // for (int i = cellX; i <= cellX + 1; i++)
-    // {
-    //     for (int j = cellY; j <= cellY + 1; j++)
-    //     {
-    //         if (i < 0 || j < 0 || i > 10 || j > 100)
-    //             continue;
-    //         GameObject *gameObject = level[i][j];
-    //         SDL_Rect *rect = gameObject->GetRectangle();
+    if (player->FiredBullet())
+    {
+        const SDL_Rect *bulletRect = player->GetBulletRect();
+        if (bulletRect == nullptr)
+            return SDL_FALSE;
+        if (SDL_HasIntersection(&this->rect, bulletRect))
+        {
+            player->DestroyBullet();
+            return SDL_TRUE;
+        }
+    }
+    return SDL_FALSE;
+}
 
-    //         // std::cout << "I: " << i << " J: " << j << std::endl;
-    //         // std::cout << "X: " << i << " J: " << j << std::endl;
-    //         // std::cout << "Tile ID: " << gameObject->GetTileId() << std::endl;
+Bullet::Bullet()
+{
+    this->SetRectPosition(10, 5);
+    this->SetRectDimension(this->W, this->H);
+    this->SetTileId(PlayerObject::PLAYER_BULLET_R);
+}
+Bullet::Bullet(const int &dir, const int x, const int y)
+{
+    if (dir == DIR::LEFT)
+    {
+        this->SetTileId(PlayerObject::PLAYER_BULLET_L);
+        this->dx = -4;
+    }
+    else if (dir == DIR::RIGHT)
+    {
+        this->SetTileId(PlayerObject::PLAYER_BULLET_R);
+        this->dx = 4;
+    }
+    std::cout << "Bullet created at: " << x << ',' << y << std::endl;
+    std::cout << "TileId: " << this->tileId << std::endl;
+    this->SetRectPosition(x, y);
+    this->SetRectDimension(this->W, this->H);
+}
 
-    //         switch (gameObject->GetTileId())
-    //         {
-    //         case PlayerObject::PLAYER_BULLET_L:
-    //         case PlayerObject::PLAYER_BULLET_R:
-    //             if (SDL_HasIntersection(&(this->rect), rect))
-    //             {
-    //                 std::cout << "Kill only the monster by bullet, left/right" << std::endl;
-    //             }
-    //             break;
-    //         case PlayerObject::PLAYER_FRONT:
-    //         case PlayerObject::PLAYER_WALK_L_1:
-    //         case PlayerObject::PLAYER_WALK_L_2:
-    //         case PlayerObject::PLAYER_WALK_L_3:
-    //         case PlayerObject::PLAYER_WALK_R_1:
-    //         case PlayerObject::PLAYER_WALK_R_2:
-    //         case PlayerObject::PLAYER_WALK_R_3:
-    //         case PlayerObject::PLAYER_CLIMB_1:
-    //         case PlayerObject::PLAYER_CLIMB_2:
-    //         case PlayerObject::PLAYER_CLIMB_3:
-    //         case PlayerObject::PLAYER_JETPACK_L_1:
-    //         case PlayerObject::PLAYER_JETPACK_L_2:
-    //         case PlayerObject::PLAYER_JETPACK_L_3:
-    //         case PlayerObject::PLAYER_JETPACK_R_1:
-    //         case PlayerObject::PLAYER_JETPACK_R_2:
-    //         case PlayerObject::PLAYER_JETPACK_R_3:
-    //             if (SDL_HasIntersection(&(this->rect), rect))
-    //             {
-    //                 std::cout << "Kill both the player and monster" << std::endl;
-    //             }
-    //             break;
-    //         default:
-    //             break;
-    //         }
-    //     }
-    // }
+void Bullet::UpdateFrame()
+{
+    this->SetRectPosition(this->rect.x + this->dx, this->rect.y);
 }
 
 Player::Player()
@@ -243,6 +234,7 @@ Player::Player()
     this->SetRectDimension(16, 16);
     this->SetRectPosition(x, y);
     this->SetTileId(PlayerObject::PLAYER_FRONT);
+    this->bullet = nullptr;
 }
 
 Player::Player(const int &x, const int &y)
@@ -250,6 +242,7 @@ Player::Player(const int &x, const int &y)
     this->SetRectDimension(16, 16);
     this->SetRectPosition(x, y);
     this->SetTileId(PlayerObject::PLAYER_FRONT);
+    this->bullet = nullptr;
 }
 
 void Player::MoveLeft()
@@ -392,6 +385,7 @@ bool Player::IsColliding(int px, int py)
         if (gameState->GotTrophy())
         {
             this->ResetSpeed();
+            this->DestroyBullet();
             levelManager->NextLevel();
         }
         break;
@@ -420,14 +414,14 @@ bool Player::IsColliding(int px, int py)
 void Player::IsColliding()
 {
 
-    this->collision_point[0] = this->IsColliding(this->rect.x + 2, this->rect.y - 1);   // Top left
-    this->collision_point[1] = this->IsColliding(this->rect.x + 12, this->rect.y - 1);  // Top right
-    this->collision_point[2] = this->IsColliding(this->rect.x + 13, this->rect.y + 4);  // Right side above mid
-    this->collision_point[3] = this->IsColliding(this->rect.x + 13, this->rect.y + 12); // Right side below mid
-    this->collision_point[4] = this->IsColliding(this->rect.x + 12, this->rect.y + 16); // Right foot
-    this->collision_point[5] = this->IsColliding(this->rect.x + 3, this->rect.y + 16);  // Left foor
-    this->collision_point[6] = this->IsColliding(this->rect.x + 2, this->rect.y + 12);  // Left side below mid
-    this->collision_point[7] = this->IsColliding(this->rect.x + 2, this->rect.y + 4);   // Left side above mid
+    this->collision_point[0] = this->IsColliding(this->rect.x + 4, this->rect.y - 1);       // Top left
+    this->collision_point[1] = this->IsColliding(this->rect.x + 12, this->rect.y - 1);      // Top right
+    this->collision_point[2] = this->IsColliding(this->rect.x + 13, this->rect.y + 4);      // Right side above mid
+    this->collision_point[3] = this->IsColliding(this->rect.x + 13, this->rect.y + 12);     // Right side below mid
+    this->collision_point[4] = this->IsColliding(this->rect.x + 12, this->rect.y + 16 + 1); // Right foot
+    this->collision_point[5] = this->IsColliding(this->rect.x + 4, this->rect.y + 16 + 1);  // Left foor
+    this->collision_point[6] = this->IsColliding(this->rect.x + 2, this->rect.y + 12);      // Left side below mid
+    this->collision_point[7] = this->IsColliding(this->rect.x + 2, this->rect.y + 4);       // Left side above mid
 
     this->isGrounded = !(this->collision_point[4] && this->collision_point[5]);
 }
@@ -542,6 +536,12 @@ void Player::ResetSpeed()
 
 void Player::UpdateFrame()
 {
+    if (this->bullet != nullptr)
+    {
+        this->bullet->UpdateFrame();
+        if (this->GetBulletRect()->x - LevelManager::getInstance()->GetCurrentOffset() < 0 || this->GetBulletRect()->x - LevelManager::getInstance()->GetCurrentOffset() > 20 * 16)
+            this->DestroyBullet();
+    }
     if (this->isDead)
     {
         if (this->dead_timer == 0)
@@ -584,4 +584,36 @@ void Player::SetPlayerPos(int x, int y)
 void Player::PlayDead()
 {
     this->isDead = true;
+}
+
+bool Player::FiredBullet()
+{
+    return (this->bullet != nullptr);
+}
+
+void Player::FireBullet()
+{
+    if (!GameState::getInstance()->GotGun() || this->bullet != nullptr)
+        return;
+    this->bullet = new Bullet(this->GetDirection(), this->x, this->y);
+}
+
+void Player::RenderBullet(SDL_Renderer *renderer, const int &offset)
+{
+    if (this->bullet == nullptr)
+    {
+        return;
+    }
+    this->bullet->Render(renderer, offset);
+}
+
+void Player::DestroyBullet()
+{
+    delete bullet;
+    bullet = nullptr;
+}
+
+const Bullet *Player::GetBullet()
+{
+    return this->bullet;
 }
