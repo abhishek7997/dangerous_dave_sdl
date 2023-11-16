@@ -66,7 +66,7 @@ void Level::RenderLevel()
         {
             if (m_Level[i][j])
             {
-                m_Level[i][j]->Render(renderer, offset);
+                m_Level[i][j]->Render(this->renderer, this->offset);
                 m_Level[i][j]->UpdateFrame(j);
             }
         }

@@ -14,13 +14,14 @@ GameState *gameState;
 void HandleRendering()
 {
     gameState->RenderStates();
-    levelManager->getLevel(gameState->getCurrentLevel())->RenderLevel();
-    gameState->GetPlayer()->Render(app->GetRenderer(), levelManager->getLevel(gameState->getCurrentLevel())->GetOffset());
+    levelManager->GetCurrentLevel()->RenderLevel();
+    gameState->GetPlayer()->RenderBullet(app->GetRenderer(), levelManager->GetCurrentOffset());
+    gameState->GetPlayer()->Render(app->GetRenderer(), levelManager->GetCurrentOffset());
 }
 
 void HandleUpdate()
 {
-    Level *level = levelManager->getLevel(gameState->getCurrentLevel());
+    Level *level = levelManager->GetCurrentLevel();
     if (!gameState->GetPlayer()->IsGrounded())
     {
         gameState->applyGravity();
@@ -179,6 +180,10 @@ void HandleEvents()
                     else
                         gameState->GetPlayer()->SetTileId(PlayerObject::PLAYER_FRONT);
                 }
+                break;
+            case SDL_SCANCODE_LCTRL:
+            case SDL_SCANCODE_RCTRL:
+                gameState->GetPlayer()->FireBullet();
                 break;
             }
         }

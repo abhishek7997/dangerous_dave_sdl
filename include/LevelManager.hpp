@@ -20,6 +20,7 @@ public:
     void ResetPlayerPos();
     void ResetOffset();
     Level *GetCurrentLevel();
+    int GetCurrentOffset();
 
 protected:
     static LevelManager *instance;

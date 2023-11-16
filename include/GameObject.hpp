@@ -10,7 +10,7 @@
 class IGameObject
 {
 public:
-    void Render(SDL_Renderer *renderer, const int &offset) const;
+    void Render(SDL_Renderer *renderer, const int &offset);
     void SetRectPosition(const int &x, const int &y);
     void SetRectDimension(const int &w, const int &h);
     int GetTileId();
@@ -39,7 +39,7 @@ public:
     MonsterObject() = delete;
     MonsterObject(const int &x, const int &y, const int &tileId);
     void Move();
-    void SetMovements(std::vector<std::pair<int, int>> movements);
+    void SetMovements(const std::vector<std::pair<int, int>> &movements);
     SDL_bool IsColliding();
 
 private:
@@ -48,6 +48,20 @@ private:
     std::vector<std::pair<int, int>>::iterator iterator;
     int startX = 0;
     int startY = 0;
+};
+
+class Bullet : public IGameObject
+{
+public:
+    Bullet();
+    Bullet(const int &dir, const int x, const int y);
+    void UpdateFrame();
+
+private:
+    int dx = 4;
+    int dead_timer = 120;
+    const int W = 12;
+    const int H = 3;
 };
 
 class Player : public IGameObject
@@ -83,6 +97,17 @@ public:
     void UpdateFrame();
     void SetPlayerPos(int x, int y);
     void PlayDead();
+    bool FiredBullet();
+    void DestroyBullet();
+    const SDL_Rect *GetBulletRect()
+    {
+        if (this->bullet != nullptr)
+            return (this->bullet)->GetRectangle();
+        return nullptr;
+    }
+    void FireBullet();
+    void RenderBullet(SDL_Renderer *renderer, const int &offset);
+    const Bullet *GetBullet();
 
 private:
     int x, y;
@@ -97,6 +122,7 @@ private:
     bool isGrounded = false;
     bool climb = false;
     bool isDead = false;
+    bool shoot = false;
 
     uint32_t player_tick = 0;
     uint32_t dead_timer = 70;
@@ -105,4 +131,5 @@ private:
     double jumpTimer;
     double lastJump = 0.0;
     bool collision_point[8] = {true};
+    Bullet *bullet = nullptr;
 };
