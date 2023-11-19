@@ -239,4 +239,19 @@ void GameState::NextLevel()
     this->currentLevel = std::min(9, this->currentLevel + 1);
 }
 
+void GameState::SetPlayerX(int x)
+{
+    this->GetPlayer()->SetPlayerX(x);
+}
+
+void GameState::SetPlayerY(int y)
+{
+    this->GetPlayer()->SetPlayerY(y);
+}
+
+void GameState::SetPlayerPos(int x, int y)
+{
+    this->GetPlayer()->SetPlayerPos(x, y);
+}
+
 GameState *GameState::instance = nullptr;

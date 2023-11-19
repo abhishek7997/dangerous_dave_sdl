@@ -95,6 +95,8 @@ public:
     void IncreaseSpeed();
     void ResetSpeed();
     void UpdateFrame();
+    void SetPlayerX(int x);
+    void SetPlayerY(int y);
     void SetPlayerPos(int x, int y);
     void PlayDead();
     bool FiredBullet();
