@@ -1,5 +1,4 @@
 #include <array>
-#include <chrono>
 #include "GameState.hpp"
 #include "LevelManager.hpp"
 
@@ -564,7 +563,7 @@ void Player::UpdateFrame()
             this->tileId = PlayerObject::PLAYER_FRONT;
         else if (GameState::getInstance()->jetpackState())
         {
-            this->tileId = this->GetDirection() == DIR::RIGHT ? PlayerObject::PLAYER_JETPACK_R_1 + (this->player_tick / 3) % 2 : PlayerObject::PLAYER_JETPACK_L_1 + (this->player_tick / 3) % 2;
+            this->tileId = (this->GetDirection() == DIR::RIGHT) ? (PlayerObject::PLAYER_JETPACK_R_1 + ((this->player_tick / 3) % 3)) : (PlayerObject::PLAYER_JETPACK_L_1 + ((this->player_tick / 3) % 3));
         }
         else
         {
@@ -572,6 +571,18 @@ void Player::UpdateFrame()
         }
     else
         this->tileId = this->startTileId + (this->player_tick / 3) % 3;
+}
+
+void Player::SetPlayerX(int x)
+{
+    this->x = x;
+    this->SetRectPosition(this->x, this->y);
+}
+
+void Player::SetPlayerY(int y)
+{
+    this->y = y;
+    this->SetRectPosition(this->x, this->y);
 }
 
 void Player::SetPlayerPos(int x, int y)
@@ -610,7 +621,7 @@ void Player::RenderBullet(SDL_Renderer *renderer, const int &offset)
 void Player::DestroyBullet()
 {
     delete bullet;
-    bullet = nullptr;
+    // bullet = nullptr;
 }
 
 const Bullet *Player::GetBullet()

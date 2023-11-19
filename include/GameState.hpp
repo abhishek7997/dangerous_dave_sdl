@@ -32,8 +32,9 @@ public:
     bool GotGun();
     void Reset();
     void NextLevel();
-    void SetPlayerX();
-    void SetPlayerY();
+    void SetPlayerX(int x);
+    void SetPlayerY(int y);
+    void SetPlayerPos(int x, int y);
     void DecreaseLives();
 
 protected:

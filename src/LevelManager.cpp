@@ -69,7 +69,7 @@ void LevelManager::NextLevel()
     const int x = m_Levels[idx]->GetPlayerStartX();
     const int y = m_Levels[idx]->GetPlayerStartY();
 
-    gameState->GetPlayer()->SetPlayerPos(x, y);
+    gameState->GetPlayer()->SetPlayerPos(x * 16, y * 16);
 }
 
 void LevelManager::ResetPlayerPos()
