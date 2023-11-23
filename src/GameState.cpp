@@ -14,7 +14,7 @@ void GameState::moveRight()
 
 void GameState::moveDown()
 {
-    if (!jetpackActivated)
+    if (!this->jetpackActivated)
         return;
     this->player->MoveDown();
 }

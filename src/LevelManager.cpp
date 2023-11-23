@@ -21,9 +21,100 @@ void LevelManager::Initialize()
     for (int i = 0; i < m_Levels.size(); i++)
     {
         m_Levels[i] = new Level(this->renderer);
-        m_Levels[i]->CreateLevel();
+        //  m_Levels[i]->CreateLevel();
     }
-    std::cout << "Created :" << m_Levels.size() << " levels" << std::endl;
+    // std::cout << "Created :" << m_Levels.size() << " levels" << std::endl;
+    this->LoadLevels();
+
+    int level = GameState::getInstance()->getCurrentLevel();
+    std::cout << "Level no: " << level << std::endl;
+    int x = this->GetCurrentLevel()->GetPlayerStartX();
+    int y = this->GetCurrentLevel()->GetPlayerStartY();
+    std::cout << "X: " << x << ' ' << "Y: " << y << std::endl;
+    GameState::getInstance()->SetPlayerPos(x * 16, y * 16);
+}
+
+void LevelManager::LoadLevels()
+{
+    std::ifstream file("D:\\Dev\\GameProgramming\\dangerous_dave_sdl\\assets\\levels.txt");
+    if (!file.is_open())
+    {
+        std::cerr << "Could not read level data" << std::endl;
+        std::exit(1);
+    }
+
+    int level = 0;
+
+    std::vector<TileData> levelTiles;
+    std::vector<TileData> enemyObjects;
+    std::vector<std::pair<int, int>> movements;
+    TileData player;
+
+    std::string line;
+    while (level < 10 && std::getline(file, line))
+    {
+        if (line.empty() || (line.size() == 1 && line[0] == '/'))
+        {
+            continue;
+        }
+        else if (line[0] == '$')
+            break;
+        else if (line[0] == '@')
+        {
+            // ++level;
+        }
+        else if (line.size() == 2 && line[0] == '_' && line[1] == '_')
+        {
+            m_Levels[level++]->CreateLevel(levelTiles, enemyObjects, player);
+            levelTiles.clear();
+            enemyObjects.clear();
+            std::cout << "Set Level: " << level << std::endl;
+            continue;
+        }
+        else if (line.size() == 2 && line[0] == '/' && line[1] == 'L')
+        {
+            while (std::getline(file, line))
+            {
+                if (line[0] == '$' || line[0] == '_')
+                    break;
+                std::stringstream ss(line);
+                int x, y, tileId;
+                char comma;
+                ss >> x >> comma >> y >> comma >> tileId;
+                levelTiles.push_back(TileData(x, y, tileId));
+            }
+        }
+        else if (line.size() == 2 && line[0] == '/' && line[1] == 'M')
+        {
+            uint8_t monsterCount, i = 0;
+            std::getline(file, line);
+            std::stringstream ss(line);
+            ss >> monsterCount;
+            while (i++ < monsterCount && std::getline(file, line))
+            {
+                if (line[0] == '_')
+                    break;
+                std::stringstream ss(line);
+                int x, y, tileId;
+                char comma;
+                ss >> x >> comma >> y >> comma >> tileId;
+                enemyObjects.push_back(TileData(x, y, tileId));
+            }
+        }
+        else if (line.size() == 2 && line[0] == '/' && line[1] == 'P')
+        {
+            std::getline(file, line);
+            std::stringstream ss(line);
+            int playerX, playerY;
+            char comma;
+            ss >> playerX >> comma >> playerY;
+            player.x = playerX;
+            player.y = playerY;
+            std::cout << "Player coords: " << player.x << ' ' << player.y << std::endl;
+        }
+    }
+
+    this->ResetPlayerPos();
 }
 
 LevelManager *LevelManager::getInstance()
@@ -75,8 +166,7 @@ void LevelManager::NextLevel()
 void LevelManager::ResetPlayerPos()
 {
     GameState *gameState = GameState::getInstance();
-    int lvl = gameState->getCurrentLevel();
-    Level *level = this->getLevel(lvl);
+    Level *level = this->GetCurrentLevel();
     const int x = level->GetPlayerStartX();
     const int y = level->GetPlayerStartY();
     gameState->GetPlayer()->SetPlayerPos(x, y);

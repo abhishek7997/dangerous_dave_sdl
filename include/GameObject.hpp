@@ -75,7 +75,7 @@ public:
     void MoveDown();
     bool IsGrounded();
 
-    bool IsColliding(int x, int y);
+    bool IsColliding(const int &x, const int &y);
     void IsColliding();
     void Gravity();
     void GetJumpTime();
@@ -95,9 +95,9 @@ public:
     void IncreaseSpeed();
     void ResetSpeed();
     void UpdateFrame();
-    void SetPlayerX(int x);
-    void SetPlayerY(int y);
-    void SetPlayerPos(int x, int y);
+    void SetPlayerX(const int &x);
+    void SetPlayerY(const int &y);
+    void SetPlayerPos(const int &x, const int &y);
     void PlayDead();
     bool FiredBullet();
     void DestroyBullet();
@@ -113,7 +113,7 @@ public:
 
 private:
     int x, y;
-    float gravity = 0.5f;
+    double gravity = 0.5;
     int dx = 2;
     int dy = 2;
     int currDir = DIR::UNSET;
@@ -129,7 +129,7 @@ private:
     uint32_t player_tick = 0;
     uint32_t dead_timer = 70;
     bool inJump = false;
-    double jumpHeight = -6;
+    double jumpHeight = -6.5;
     double jumpTimer;
     double lastJump = 0.0;
     bool collision_point[8] = {true};

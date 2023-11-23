@@ -1,8 +1,12 @@
 #pragma once
 
-#include <SDL.h>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <tuple>
 #include <list>
 #include <array>
+#include <SDL.h>
 #include "GameObject.hpp"
 #include "TileManager.hpp"
 #include "GameState.hpp"
@@ -12,7 +16,7 @@ class Level
 {
 public:
     Level(SDL_Renderer *renderer);
-    void CreateLevel();
+    void CreateLevel(const std::vector<TileData> staticTiles, const std::vector<TileData> monsterObjects, const TileData player);
     void RenderLevel();
     SDL_Rect *QueryCell(const int &x, const int &y);
     void SetPlayerStartingPosition(const int x, const int y);

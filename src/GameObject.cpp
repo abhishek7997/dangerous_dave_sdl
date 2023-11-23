@@ -228,8 +228,8 @@ void Bullet::UpdateFrame()
 
 Player::Player()
 {
-    x = 15;
-    y = 5;
+    this->x = 15;
+    this->y = 5;
     this->SetRectDimension(16, 16);
     this->SetRectPosition(x, y);
     this->SetTileId(PlayerObject::PLAYER_FRONT);
@@ -238,53 +238,55 @@ Player::Player()
 
 Player::Player(const int &x, const int &y)
 {
+    this->x = x;
+    this->y = y;
     this->SetRectDimension(16, 16);
-    this->SetRectPosition(x, y);
+    this->SetRectPosition(this->x, this->y);
     this->SetTileId(PlayerObject::PLAYER_FRONT);
     this->bullet = nullptr;
 }
 
 void Player::MoveLeft()
 {
-    if (x - dx < 1)
+    if (!this->canMoveLeft() || this->x - this->dx < 1)
         return;
 
-    x -= dx;
+    this->x -= this->dx;
     this->SetLeft();
-    this->SetRectPosition(x, y);
+    this->SetRectPosition(this->x, this->y);
     this->player_tick++;
 }
 
 void Player::MoveRight()
 {
-    if (x + dx > 99 * 16)
+    if (!this->canMoveRight() || this->x + this->dx > 99 * 16)
         return;
 
-    x += dx;
+    this->x += this->dx;
     this->SetRight();
-    this->SetRectPosition(x, y);
+    this->SetRectPosition(this->x, this->y);
     this->player_tick++;
 }
 
 void Player::MoveUp()
 {
-    if (y - dy < 1)
+    if (!this->canMoveUp() || this->y - this->dy < 1)
         return;
 
-    y -= dy;
+    this->y -= this->dy;
     this->SetUp();
-    this->SetRectPosition(x, y);
+    this->SetRectPosition(this->x, this->y);
     this->player_tick++;
 }
 
 void Player::MoveDown()
 {
-    if (y + dy > 99 * 16)
+    if (!this->canMoveDown() || this->y + this->dy > 99 * 16)
         return;
 
-    y += dy;
+    this->y += this->dy;
     this->SetDown();
-    this->SetRectPosition(x, y);
+    this->SetRectPosition(this->x, this->y);
     this->player_tick++;
 }
 
@@ -295,7 +297,7 @@ bool Player::IsGrounded()
 }
 
 // Player
-bool Player::IsColliding(int px, int py)
+bool Player::IsColliding(const int &px, const int &py)
 {
     GameState *gameState = GameState::getInstance();
     TileManager *tileManager = TileManager::getInstance();
@@ -312,19 +314,18 @@ bool Player::IsColliding(int px, int py)
     int tileId = 0;
     int gridX = py / 16;
     int gridY = px / 16;
-    bool res = true;
+    bool res = false;
 
     if (gridX < 0 || gridX > 10 || gridY < 0 || gridY > 99)
-        return res;
+        return true;
 
     SDL_Rect *rect = level->QueryCell(gridX, gridY);
     tileId = level->GetLevel()[gridX][gridY]->GetTileId();
 
+    // if (tileId != 0)
+    //     std::cout << "Colliding with tile: " << tileId << std::endl;
     switch (tileId)
     {
-    case StaticObject::EMPTY:
-        res = true;
-        break;
     case StaticObject::WALL_BLUE:
     case StaticObject::WALL_RED:
     case StaticObject::WALL_HALF_1:
@@ -338,7 +339,8 @@ bool Player::IsColliding(int px, int py)
     case StaticObject::DIVIDER_PURPLE:
     case StaticObject::PIPE_RIGHT:
     case StaticObject::PIPE_DOWN:
-        res = false;
+    case StaticObject::PLATFORM:
+        res = true;
         break;
     case StaticObject::POINT_PURPLE:
         gameState->addScore(50);
@@ -370,6 +372,7 @@ bool Player::IsColliding(int px, int py)
     case StaticObject::TROPHY_4:
     case StaticObject::TROPHY_5:
         gameState->SetGotTrophy(true);
+        gameState->addScore(1000);
         level->ClearCell(gridX, gridY);
         break;
     case StaticObject::JETPACK:
@@ -413,61 +416,73 @@ bool Player::IsColliding(int px, int py)
 void Player::IsColliding()
 {
 
-    this->collision_point[0] = this->IsColliding(this->rect.x + 4, this->rect.y - 1);       // Top left
-    this->collision_point[1] = this->IsColliding(this->rect.x + 12, this->rect.y - 1);      // Top right
-    this->collision_point[2] = this->IsColliding(this->rect.x + 13, this->rect.y + 4);      // Right side above mid
-    this->collision_point[3] = this->IsColliding(this->rect.x + 13, this->rect.y + 12);     // Right side below mid
-    this->collision_point[4] = this->IsColliding(this->rect.x + 12, this->rect.y + 16 + 1); // Right foot
-    this->collision_point[5] = this->IsColliding(this->rect.x + 4, this->rect.y + 16 + 1);  // Left foor
-    this->collision_point[6] = this->IsColliding(this->rect.x + 2, this->rect.y + 12);      // Left side below mid
-    this->collision_point[7] = this->IsColliding(this->rect.x + 2, this->rect.y + 4);       // Left side above mid
+    // std::cout << this->x / 16 << ' ' << this->y / 16 << std::endl;
+    this->collision_point[0] = this->IsColliding(this->rect.x + 4, this->rect.y - 1);   // Top left
+    this->collision_point[1] = this->IsColliding(this->rect.x + 10, this->rect.y - 1);  // Top right
+    this->collision_point[2] = this->IsColliding(this->rect.x + 13, this->rect.y + 3);  // Right side above mid
+    this->collision_point[3] = this->IsColliding(this->rect.x + 13, this->rect.y + 13); // Right side below mid
+    this->collision_point[4] = this->IsColliding(this->rect.x + 10, this->rect.y + 17); // Right foot
+    this->collision_point[5] = this->IsColliding(this->rect.x + 4, this->rect.y + 17);  // Left foot
+    this->collision_point[6] = this->IsColliding(this->rect.x + 4, this->rect.y + 13);  // Left side below mid
+    this->collision_point[7] = this->IsColliding(this->rect.x + 2, this->rect.y + 3);   // Left side above mid
 
-    this->isGrounded = !(this->collision_point[4] && this->collision_point[5]);
+    // for (int i = 0; i < 8; i++)
+    // {
+    //     std::cout << this->collision_point[i] << ' ';
+    // }
+    // std::cout << std::endl;
+    this->isGrounded = this->collision_point[4] || this->collision_point[5];
+
+    if (this->isGrounded)
+    {
+        int align = this->y % 16;
+        if (align)
+            this->y = (align < 8) ? this->y - align : this->y + 16 - align;
+    }
 }
 
 void Player::Gravity()
 {
     if (this->isDead)
         return;
-    if (JumpState())
+    if (this->inJump)
     {
-        jumpHeight += gravity;
-        y += jumpHeight + gravity;
-        if (jumpHeight > 0 || !canMoveUp())
+        this->jumpHeight += gravity;
+        this->y += jumpHeight + gravity;
+        if (this->jumpHeight > 0.0 || !canMoveUp())
         {
-            inJump = false;
-            jumpHeight = -6;
+            this->inJump = false;
+            this->jumpHeight = -6.5;
         }
     }
     else
     {
-        inJump = false;
-        if (y + dy < 99 * 16)
-            y += dy;
+        if (this->y + this->dy < 99 * 16)
+            this->y += this->dy;
     }
-    this->SetRectPosition(x, y);
+    this->SetRectPosition(this->x, this->y);
 }
 
 void Player::GetJumpTime()
 {
-    jumpTimer = SDL_GetTicks();
+    this->jumpTimer = SDL_GetTicks();
 }
 
 bool Player::JumpState()
 {
-    return inJump;
+    return this->inJump;
 }
 
 void Player::Jump()
 {
-    if (jumpTimer - lastJump > 100)
+    if (this->jumpTimer - this->lastJump > 100)
     {
-        inJump = true;
-        lastJump = jumpTimer;
+        this->inJump = true;
+        this->lastJump = this->jumpTimer;
     }
     else
     {
-        Gravity();
+        this->Gravity();
     }
 }
 
@@ -493,22 +508,22 @@ void Player::SetDown()
 
 bool Player::canMoveDown()
 {
-    return this->collision_point[4] && this->collision_point[5] && !this->isDead;
+    return !(this->collision_point[4] && this->collision_point[5]) && !this->isDead;
 }
 
 bool Player::canMoveUp()
 {
-    return this->collision_point[0] && this->collision_point[1] && !this->isDead;
+    return !(this->collision_point[0] || this->collision_point[1]) && !this->isDead;
 }
 
 bool Player::canMoveLeft()
 {
-    return this->collision_point[6] && this->collision_point[7] && !this->isDead;
+    return !(this->collision_point[6] || this->collision_point[7]) && !this->isDead;
 }
 
 bool Player::canMoveRight()
 {
-    return this->collision_point[2] && this->collision_point[3] && !this->isDead;
+    return !(this->collision_point[2] || this->collision_point[3]) && !this->isDead;
 }
 
 int Player::GetDirection()
@@ -555,10 +570,15 @@ void Player::UpdateFrame()
         else
         {
             this->tileId = MiscObject::DEATH_1 + ((this->dead_timer / 5) % 4);
+            if (this->dead_timer < 25)
+            {
+                this->tileId = StaticObject::EMPTY;
+            }
             this->dead_timer--;
         }
     }
     else if (this->inJump || !this->IsGrounded())
+    {
         if (this->GetDirection() == DIR::UNSET)
             this->tileId = PlayerObject::PLAYER_FRONT;
         else if (GameState::getInstance()->jetpackState())
@@ -569,27 +589,31 @@ void Player::UpdateFrame()
         {
             this->tileId = this->GetDirection() == DIR::RIGHT ? PlayerObject::PLAYER_JUMP_R : PlayerObject::PLAYER_JUMP_L;
         }
+    }
     else
+    {
         this->tileId = this->startTileId + (this->player_tick / 3) % 3;
+    }
 }
 
-void Player::SetPlayerX(int x)
+void Player::SetPlayerX(const int &x)
 {
     this->x = x;
     this->SetRectPosition(this->x, this->y);
 }
 
-void Player::SetPlayerY(int y)
+void Player::SetPlayerY(const int &y)
 {
     this->y = y;
     this->SetRectPosition(this->x, this->y);
 }
 
-void Player::SetPlayerPos(int x, int y)
+void Player::SetPlayerPos(const int &x, const int &y)
 {
     this->x = x;
     this->y = y;
     this->SetRectPosition(this->x, this->y);
+    std::cout << "Set player pos to: " << this->x << ',' << this->y << std::endl;
 }
 
 void Player::PlayDead()

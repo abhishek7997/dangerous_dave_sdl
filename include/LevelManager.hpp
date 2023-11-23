@@ -21,6 +21,7 @@ public:
     void ResetOffset();
     Level *GetCurrentLevel();
     int GetCurrentOffset();
+    void LoadLevels();
 
 protected:
     static LevelManager *instance;

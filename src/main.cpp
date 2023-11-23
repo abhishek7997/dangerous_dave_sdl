@@ -28,48 +28,48 @@ void HandleUpdate()
     }
     if (gameState->GetPlayer()->GetDirection() == DIR::RIGHT)
     {
-        if (gameState->GetPlayer()->GetRectangle()->x > 5 * 20 * 16)
+        if (gameState->GetPlayer()->GetRectangle()->x > SCREENOFFSET::FIVE)
         {
-            level->SetOffset(4 * 20 * 16);
+            level->SetOffset(SCREENOFFSET::FIVE);
         }
-        else if (gameState->GetPlayer()->GetRectangle()->x > 4 * 20 * 16)
+        else if (gameState->GetPlayer()->GetRectangle()->x > SCREENOFFSET::FOUR)
         {
-            level->SetOffset(4 * 20 * 16);
+            level->SetOffset(SCREENOFFSET::FOUR);
         }
-        else if (gameState->GetPlayer()->GetRectangle()->x > 3 * 20 * 16)
+        else if (gameState->GetPlayer()->GetRectangle()->x > SCREENOFFSET::THREE)
         {
-            level->SetOffset(3 * 20 * 16);
+            level->SetOffset(SCREENOFFSET::THREE);
         }
-        else if (gameState->GetPlayer()->GetRectangle()->x > 2 * 20 * 16)
+        else if (gameState->GetPlayer()->GetRectangle()->x > SCREENOFFSET::TWO)
         {
-            level->SetOffset(2 * 20 * 16);
+            level->SetOffset(SCREENOFFSET::TWO);
         }
-        else if (gameState->GetPlayer()->GetRectangle()->x > 20 * 16)
+        else if (gameState->GetPlayer()->GetRectangle()->x > SCREENOFFSET::ONE)
         {
-            level->SetOffset(20 * 16);
+            level->SetOffset(SCREENOFFSET::ONE);
         }
     }
     else if (gameState->GetPlayer()->GetDirection() == DIR::LEFT)
     {
-        if (gameState->GetPlayer()->GetRectangle()->x < 20 * 16)
+        if (gameState->GetPlayer()->GetRectangle()->x < SCREENOFFSET::ONE)
         {
-            level->SetOffset(0);
+            level->SetOffset(SCREENOFFSET::ZERO);
         }
-        else if (gameState->GetPlayer()->GetRectangle()->x < 2 * 20 * 16)
+        else if (gameState->GetPlayer()->GetRectangle()->x < SCREENOFFSET::TWO)
         {
-            level->SetOffset(20 * 16);
+            level->SetOffset(SCREENOFFSET::ONE);
         }
-        else if (gameState->GetPlayer()->GetRectangle()->x < 3 * 20 * 16)
+        else if (gameState->GetPlayer()->GetRectangle()->x < SCREENOFFSET::THREE)
         {
-            level->SetOffset(2 * 20 * 16);
+            level->SetOffset(SCREENOFFSET::TWO);
         }
-        else if (gameState->GetPlayer()->GetRectangle()->x < 4 * 20 * 16)
+        else if (gameState->GetPlayer()->GetRectangle()->x < SCREENOFFSET::FOUR)
         {
-            level->SetOffset(3 * 20 * 16);
+            level->SetOffset(SCREENOFFSET::THREE);
         }
-        else if (gameState->GetPlayer()->GetRectangle()->x < 5 * 20 * 16)
+        else if (gameState->GetPlayer()->GetRectangle()->x < SCREENOFFSET::FIVE)
         {
-            level->SetOffset(4 * 20 * 16);
+            level->SetOffset(SCREENOFFSET::FOUR);
         }
     }
     gameState->GetPlayer()->UpdateFrame();
