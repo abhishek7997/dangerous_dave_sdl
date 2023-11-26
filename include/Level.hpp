@@ -16,7 +16,7 @@ class Level
 {
 public:
     Level(SDL_Renderer *renderer);
-    void CreateLevel(const std::vector<TileData> staticTiles, const std::vector<TileData> monsterObjects, const TileData player);
+    void CreateLevel(const std::vector<TileData> staticTiles, const std::vector<TileData> monsterObjects, const TileData player, const std::vector<std::pair<int, int>> movements);
     void RenderLevel();
     SDL_Rect *QueryCell(const int &x, const int &y);
     void SetPlayerStartingPosition(const int x, const int y);

@@ -215,7 +215,7 @@ enum DIR
 enum SCREENOFFSET
 {
     ZERO = 0,
-    ONE = 20 * 16,
+    ONE = 18 * 16,
     TWO = 2 * ONE,
     THREE = 3 * ONE,
     FOUR = 4 * ONE,

@@ -2,6 +2,7 @@
 
 #include <array>
 #include <vector>
+#include <list>
 #include <utility>
 #include <SDL.h>
 #include "TileManager.hpp"
@@ -30,17 +31,38 @@ public:
     GameObject() = delete;
     GameObject(const int &x, const int &y, const int &tileId);
     void SetPosition(const int &x, const int &y);
-    void UpdateFrame(const int salt);
+    void UpdateFrame(const int &salt);
+};
+
+class EnemyBullet : public IGameObject
+{
+public:
+    EnemyBullet();
+    EnemyBullet(const int &dir, const int x, const int y);
+    void UpdateFrame(const int &m_ticks);
+
+private:
+    int dx = 6;
+    int dead_timer = 120;
+    const int W = 20;
+    const int H = 3;
 };
 
 class MonsterObject : public IGameObject
 {
 public:
     MonsterObject() = delete;
-    MonsterObject(const int &x, const int &y, const int &tileId);
+    MonsterObject(const int x, const int y, const int tileId);
     void Move();
-    void SetMovements(const std::vector<std::pair<int, int>> &movements);
+    void SetMovements(const std::vector<std::pair<int, int>> movements);
     SDL_bool IsColliding();
+    void UpdateFrame();
+    void FireBullet();
+    void RenderBullet(SDL_Renderer *renderer, const int &offset);
+    std::list<EnemyBullet *>::iterator DestroyBullet(std::list<EnemyBullet *>::iterator it);
+    bool InView();
+    int GetDirection();
+    ~MonsterObject();
 
 private:
     std::vector<std::pair<int, int>> movements;
@@ -48,6 +70,11 @@ private:
     std::vector<std::pair<int, int>>::iterator iterator;
     int startX = 0;
     int startY = 0;
+    int x;
+    int y;
+    uint32_t m_ticks = 0;
+    std::list<EnemyBullet *> bullets;
+    const unsigned int fireRate = 20; // Higher value means low fire rate
 };
 
 class Bullet : public IGameObject
@@ -101,6 +128,7 @@ public:
     void PlayDead();
     bool FiredBullet();
     void DestroyBullet();
+    bool IsDead();
     const SDL_Rect *GetBulletRect()
     {
         if (this->bullet != nullptr)

@@ -65,7 +65,7 @@ void LevelManager::LoadLevels()
         }
         else if (line.size() == 2 && line[0] == '_' && line[1] == '_')
         {
-            m_Levels[level++]->CreateLevel(levelTiles, enemyObjects, player);
+            m_Levels[level++]->CreateLevel(levelTiles, enemyObjects, player, movements);
             levelTiles.clear();
             enemyObjects.clear();
             std::cout << "Set Level: " << level << std::endl;
@@ -101,6 +101,22 @@ void LevelManager::LoadLevels()
                 enemyObjects.push_back(TileData(x, y, tileId));
             }
         }
+        else if (line.size() == 2 && line[0] == '/' && line[1] == 'm')
+        {
+            std::getline(file, line);
+            std::stringstream ss(line);
+            int dx, dy;
+            while (std::getline(file, line))
+            {
+                if (line.size() >= 1 && line[0] == '_')
+                    break;
+                std::stringstream ss(line);
+                int x, y, tileId;
+                char comma;
+                ss >> dx >> comma >> dy;
+                movements.push_back({dx, dy});
+            }
+        }
         else if (line.size() == 2 && line[0] == '/' && line[1] == 'P')
         {
             std::getline(file, line);
@@ -110,7 +126,6 @@ void LevelManager::LoadLevels()
             ss >> playerX >> comma >> playerY;
             player.x = playerX;
             player.y = playerY;
-            std::cout << "Player coords: " << player.x << ' ' << player.y << std::endl;
         }
     }
 
@@ -151,25 +166,23 @@ LevelManager::LevelManager()
 
 void LevelManager::NextLevel()
 {
-    GameState *gameState = GameState::getInstance();
-    gameState->Reset();
-    gameState->NextLevel();
+    GameState::getInstance()->Reset();
+    GameState::getInstance()->NextLevel();
 
-    const int idx = gameState->getCurrentLevel();
+    const int idx = GameState::getInstance()->getCurrentLevel();
 
     const int x = m_Levels[idx]->GetPlayerStartX();
     const int y = m_Levels[idx]->GetPlayerStartY();
 
-    gameState->GetPlayer()->SetPlayerPos(x * 16, y * 16);
+    GameState::getInstance()->GetPlayer()->SetPlayerPos(x * 16, y * 16);
 }
 
 void LevelManager::ResetPlayerPos()
 {
-    GameState *gameState = GameState::getInstance();
     Level *level = this->GetCurrentLevel();
     const int x = level->GetPlayerStartX();
     const int y = level->GetPlayerStartY();
-    gameState->GetPlayer()->SetPlayerPos(x, y);
+    GameState::getInstance()->GetPlayer()->SetPlayerPos(x * 16, y * 16);
 }
 
 void LevelManager::ResetOffset()

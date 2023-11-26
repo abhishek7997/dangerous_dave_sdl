@@ -49,7 +49,7 @@ private:
 
     int lives = 3;
     int score = 0;
-    int currentLevel = 0;
+    int currentLevel = 2;
 
     bool gotJetpack = false;
     bool jetpackActivated = false;
