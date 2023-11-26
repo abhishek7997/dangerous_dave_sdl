@@ -211,3 +211,27 @@ enum DIR
     UP = 2,
     DOWN = 3
 };
+
+enum SCREENOFFSET
+{
+    ZERO = 0,
+    ONE = 18 * 16,
+    TWO = 2 * ONE,
+    THREE = 3 * ONE,
+    FOUR = 4 * ONE,
+    FIVE = 5 * ONE
+};
+
+struct TileData
+{
+    int x = 0;
+    int y = 0;
+    int tileId = StaticObject::EMPTY;
+    TileData() : x(0), y(0), tileId(StaticObject::EMPTY)
+    {
+    }
+
+    TileData(int x, int y, int tileId) : x(x), y(y), tileId(tileId)
+    {
+    }
+};

@@ -3,8 +3,8 @@
 DigitDisplay::DigitDisplay(SDL_Renderer *renderer)
 {
     this->renderer = renderer;
-    this->tileManager = TileManager::getInstance();
 }
+
 void DigitDisplay::RenderText(int x, int num)
 {
     if (num > 99999)
@@ -29,6 +29,6 @@ SDL_Texture *DigitDisplay::GetDigitTexture(const int &digit)
 {
     if (digit < 0 || digit > 9)
         return nullptr;
-    SDL_Texture *digitTexture = TileManager::getInstance()->GetTileById(148 + digit);
+    SDL_Texture *digitTexture = TileManager::getInstance()->GetTileById(MiscObject::DIGIT_ZERO + digit);
     return digitTexture;
 }
