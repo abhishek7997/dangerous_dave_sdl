@@ -211,15 +211,7 @@ int MonsterObject::GetDirection()
 
 void MonsterObject::FireBullet()
 {
-    // if (!this->InView())
-    // {
-    //     std::cout << "Not in view" << std::endl;
-    // }
-    // else
-    // {
-    //     std::cout << "In view" << std::endl;
-    // }
-    if (this->InView() && ((this->m_ticks / 3) % this->fireRate == 0) && this->bullets.size() < 5)
+    if (this->InView() && ((this->m_ticks / 3) % this->fireRate == 0) && this->bullets.size() < 6)
     {
         int x;
         switch (this->GetDirection())
@@ -235,7 +227,6 @@ void MonsterObject::FireBullet()
             break;
         }
         this->bullets.push_back(new EnemyBullet(this->GetDirection(), x, this->y + 8));
-        std::cout << "Fired monster bullet" << std::endl;
     }
 }
 
@@ -249,7 +240,6 @@ void MonsterObject::RenderBullet(SDL_Renderer *renderer, const int &offset)
 
 std::list<EnemyBullet *>::iterator MonsterObject::DestroyBullet(std::list<EnemyBullet *>::iterator it)
 {
-    std::cout << "Delete monster bullet" << std::endl;
     delete *it;
     return bullets.erase(it);
 }
@@ -355,12 +345,12 @@ EnemyBullet::EnemyBullet(const int &dir, const int x, const int y)
     if (dir == DIR::LEFT)
     {
         this->SetTileId(EnemyObject::ENEMY_BULLET_L_1);
-        this->dx = -4;
+        this->dx = -speed;
     }
     else if (dir == DIR::RIGHT)
     {
         this->SetTileId(EnemyObject::ENEMY_BULLET_R_1);
-        this->dx = 4;
+        this->dx = speed;
     }
     this->SetRectPosition(x, y);
     this->SetRectDimension(this->W, this->H);
@@ -489,27 +479,27 @@ bool Player::IsColliding(const int &px, const int &py)
         res = true;
         break;
     case StaticObject::POINT_PURPLE:
-        gameState->addScore(50);
+        gameState->AddScore(50);
         level->ClearCell(gridX, gridY);
         break;
     case StaticObject::POINT_BLUE:
-        gameState->addScore(100);
+        gameState->AddScore(100);
         level->ClearCell(gridX, gridY);
         break;
     case StaticObject::POINT_RED:
-        gameState->addScore(200);
+        gameState->AddScore(200);
         level->ClearCell(gridX, gridY);
         break;
     case StaticObject::POINT_RING:
-        gameState->addScore(300);
+        gameState->AddScore(300);
         level->ClearCell(gridX, gridY);
         break;
     case StaticObject::POINT_WAND:
-        gameState->addScore(500);
+        gameState->AddScore(500);
         level->ClearCell(gridX, gridY);
         break;
     case StaticObject::POINT_CROWN:
-        gameState->addScore(800);
+        gameState->AddScore(800);
         level->ClearCell(gridX, gridY);
         break;
     case StaticObject::TROPHY_1:
@@ -518,7 +508,7 @@ bool Player::IsColliding(const int &px, const int &py)
     case StaticObject::TROPHY_4:
     case StaticObject::TROPHY_5:
         gameState->SetGotTrophy(true);
-        gameState->addScore(1000);
+        gameState->AddScore(1000);
         level->ClearCell(gridX, gridY);
         break;
     case StaticObject::JETPACK:
@@ -569,8 +559,8 @@ void Player::IsColliding()
     this->collision_point[3] = this->IsColliding(this->rect.x + 14, this->rect.y + 13); // Right side below mid
     this->collision_point[4] = this->IsColliding(this->rect.x + 11, this->rect.y + 17); // Right foot
     this->collision_point[5] = this->IsColliding(this->rect.x + 3, this->rect.y + 17);  // Left foot
-    this->collision_point[6] = this->IsColliding(this->rect.x + 2, this->rect.y + 13);  // Left side below mid
-    this->collision_point[7] = this->IsColliding(this->rect.x + 2, this->rect.y + 3);   // Left side above mid
+    this->collision_point[6] = this->IsColliding(this->rect.x - 1, this->rect.y + 13);  // Left side below mid
+    this->collision_point[7] = this->IsColliding(this->rect.x - 1, this->rect.y + 3);   // Left side above mid
 
     // for (int i = 0; i < 8; i++)
     // {
@@ -591,14 +581,14 @@ void Player::Gravity()
 {
     if (this->isDead)
         return;
+
     if (this->inJump)
     {
         this->jumpHeight += gravity;
         this->y += jumpHeight + gravity;
         if (this->jumpHeight > 0.0 || !canMoveUp())
         {
-            this->inJump = false;
-            this->jumpHeight = -6.5;
+            this->ResetJump();
         }
     }
     else
@@ -630,6 +620,13 @@ void Player::Jump()
     {
         this->Gravity();
     }
+}
+
+void Player::ResetJump()
+{
+    this->inJump = false;
+    this->jumpHeight = -6.5;
+    this->lastJump = 0.0;
 }
 
 void Player::SetLeft()

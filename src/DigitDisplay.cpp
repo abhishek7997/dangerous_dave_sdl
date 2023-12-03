@@ -1,12 +1,12 @@
 #include "DigitDisplay.hpp"
 
-DigitDisplay::DigitDisplay(SDL_Renderer *renderer)
+DigitDisplay::DigitDisplay()
 {
-    this->renderer = renderer;
 }
 
 void DigitDisplay::RenderText(int x, int num)
 {
+    SDL_Renderer *renderer = SDLApp::getInstance()->GetRenderer();
     if (num > 99999)
         num = 99999;
     std::string str = std::to_string(num);

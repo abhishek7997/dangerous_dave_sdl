@@ -1,13 +1,14 @@
+#pragma once
+
 #include <iostream>
 #include <functional>
 #include <SDL.h>
 #include <SDL_image.h>
-#include "GameState.hpp"
 
 class SDLApp
 {
 public:
-    SDLApp();
+    static SDLApp *getInstance();
     int Initialize();
     void SetEventCallback(std::function<void(void)> func);
     void SetUpdateCallback(std::function<void(void)> func);
@@ -18,6 +19,11 @@ public:
     ~SDLApp();
 
 private:
+    static SDLApp *instance;
+    SDLApp();
+    SDLApp(const SDLApp &) = delete;
+    SDLApp &operator=(const SDLApp &) = delete;
+
     bool isRunning = true;
     const int m_RenderScale = 3;
     const int m_WindowWidth = 960;

@@ -7,6 +7,7 @@
 #include <list>
 #include <array>
 #include <SDL.h>
+#include "SDLApp.hpp"
 #include "GameObject.hpp"
 #include "TileManager.hpp"
 #include "GameState.hpp"
@@ -15,7 +16,7 @@
 class Level
 {
 public:
-    Level(SDL_Renderer *renderer);
+    Level();
     void CreateLevel(const std::vector<TileData> staticTiles, const std::vector<TileData> monsterObjects, const TileData player, const std::vector<std::pair<int, int>> movements);
     void RenderLevel();
     SDL_Rect *QueryCell(const int &x, const int &y);

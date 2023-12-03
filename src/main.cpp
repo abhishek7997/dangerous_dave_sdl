@@ -1,10 +1,10 @@
 #include <iostream>
 #include <SDL.h>
-#include "TileManager.hpp"
-#include "Level.hpp"
-#include "LevelManager.hpp"
-#include "GameState.hpp"
 #include "SDLApp.hpp"
+#include "GameState.hpp"
+#include "TileManager.hpp"
+#include "LevelManager.hpp"
+#include "Level.hpp"
 
 SDLApp *app;
 TileManager *tileManager;
@@ -87,28 +87,19 @@ void HandleEvents()
 
     if (keystates[SDL_SCANCODE_RIGHT] && keystates[SDL_SCANCODE_UP])
     {
-        if (gameState->GetPlayer()->canMoveRight())
-        {
-            gameState->moveRight();
-            gameState->jump();
-            gameState->GetPlayer()->SetTileId(PlayerObject::PLAYER_JUMP_R);
-        }
+        gameState->moveRight();
+        gameState->jump();
+        gameState->GetPlayer()->SetTileId(PlayerObject::PLAYER_JUMP_R);
     }
     else if (keystates[SDL_SCANCODE_LEFT] && keystates[SDL_SCANCODE_UP])
     {
-        if (gameState->GetPlayer()->canMoveLeft())
-        {
-            gameState->moveLeft();
-            gameState->jump();
-            gameState->GetPlayer()->SetTileId(PlayerObject::PLAYER_JUMP_L);
-        }
+        gameState->moveLeft();
+        gameState->jump();
+        gameState->GetPlayer()->SetTileId(PlayerObject::PLAYER_JUMP_L);
     }
     else if (keystates[SDL_SCANCODE_RIGHT])
     {
-        if (gameState->GetPlayer()->canMoveRight())
-        {
-            gameState->moveRight();
-        }
+        gameState->moveRight();
         if (gameState->jetpackState())
         {
             gameState->GetPlayer()->SetTileId(PlayerObject::PLAYER_JETPACK_R_1);
@@ -120,10 +111,7 @@ void HandleEvents()
     }
     else if (keystates[SDL_SCANCODE_LEFT])
     {
-        if (gameState->GetPlayer()->canMoveLeft())
-        {
-            gameState->moveLeft();
-        }
+        gameState->moveLeft();
         if (gameState->jetpackState())
         {
             gameState->GetPlayer()->SetTileId(PlayerObject::PLAYER_JETPACK_L_1);
@@ -137,25 +125,16 @@ void HandleEvents()
     {
         if (gameState->jetpackState())
         {
-            if (gameState->GetPlayer()->canMoveUp())
-            {
-                gameState->moveUp();
-            }
+            gameState->moveUp();
         }
-        else if (gameState->GetPlayer()->IsGrounded())
-        {
-            gameState->jump();
-            gameState->GetPlayer()->SetTileId(PlayerObject::PLAYER_JUMP_R);
-        }
+        gameState->jump();
+        gameState->GetPlayer()->SetTileId(PlayerObject::PLAYER_JUMP_R);
     }
     else if (keystates[SDL_SCANCODE_DOWN])
     {
         if (gameState->jetpackState())
         {
-            if (gameState->GetPlayer()->canMoveDown())
-            {
-                gameState->moveDown();
-            }
+            gameState->moveDown();
         }
     }
 
@@ -192,16 +171,10 @@ void HandleEvents()
 
 int main(int argc, char *argv[])
 {
-    app = new SDLApp();
-    gameState = GameState::getInstance(app->GetRenderer());
-    tileManager = TileManager::getInstance(app->GetRenderer()); // Loaded the tile manager
-    tileManager->LoadTiles();
-
+    app = SDLApp::getInstance();
+    gameState = GameState::getInstance();
+    tileManager = TileManager::getInstance();
     levelManager = LevelManager::getInstance();
-    levelManager->SetRenderer(app->GetRenderer());
-    levelManager->Initialize();
-
-    std::cout << "Initialized level manager" << std::endl;
 
     app->SetEventCallback(HandleEvents);
     app->SetUpdateCallback(HandleUpdate);
@@ -210,6 +183,7 @@ int main(int argc, char *argv[])
 
     delete levelManager;
     delete tileManager;
+    delete gameState;
     delete app;
 
     return 0;

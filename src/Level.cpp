@@ -2,9 +2,9 @@
 
 std::vector<TileData> levelTiles;
 
-Level::Level(SDL_Renderer *renderer)
+Level::Level()
 {
-    this->renderer = renderer;
+    this->renderer = SDLApp::getInstance()->GetRenderer();
     this->tileManager = TileManager::getInstance();
 
     const int tileWidth = 16;

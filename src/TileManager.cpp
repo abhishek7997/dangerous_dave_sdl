@@ -341,7 +341,7 @@ void TileManager::LoadMiscObjects(SDL_Renderer *renderer, SDL_Texture *source, i
     std::cout << "Tile count for LoadMiscObjects: " << tile << std::endl;
 }
 
-TileManager::TileManager(SDL_Renderer *renderer)
+TileManager::TileManager()
 {
     if (IMG_Init(IMG_INIT_PNG) < 0)
     {
@@ -349,20 +349,16 @@ TileManager::TileManager(SDL_Renderer *renderer)
     }
 
     this->tiles = std::vector<SDL_Texture *>(158);
-    this->renderer = renderer;
-}
-
-TileManager *TileManager::getInstance(SDL_Renderer *renderer)
-{
-    if (instance == nullptr)
-    {
-        instance = new TileManager(renderer);
-    }
-    return instance;
+    this->renderer = SDLApp::getInstance()->GetRenderer();
 }
 
 TileManager *TileManager::getInstance()
 {
+    if (instance == nullptr)
+    {
+        instance = new TileManager();
+        instance->LoadTiles();
+    }
     return instance;
 }
 

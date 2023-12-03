@@ -19,10 +19,8 @@ public:
     void toggleJetpack();
     bool jetpackState();
     int getCurrentLevel();
-    void SetRenderer(SDL_Renderer *renderer);
     static GameState *getInstance();
-    static GameState *getInstance(SDL_Renderer *renderer);
-    void addScore(int score);
+    void AddScore(const int &score);
     void RenderStates();
     void SetGotTrophy(bool);
     void SetGotJetpack(bool);
@@ -40,16 +38,15 @@ public:
 protected:
     static GameState *instance;
     GameState();
-    GameState(SDL_Renderer *renderer);
 
 private:
     const int playerWidth = 20;
     const int playerHeight = 16;
-    const float gravity = 0.5f;
+    const float gravity = 0.4f;
 
     int lives = 3;
     int score = 0;
-    int currentLevel = 2;
+    int currentLevel = 0;
 
     bool gotJetpack = false;
     bool jetpackActivated = false;
