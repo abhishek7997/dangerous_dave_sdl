@@ -42,7 +42,8 @@ public:
     void UpdateFrame(const int &m_ticks);
 
 private:
-    int dx = 6;
+    const int speed = 7;
+    int dx;
     int dead_timer = 120;
     const int W = 20;
     const int H = 3;
@@ -108,6 +109,7 @@ public:
     void GetJumpTime();
     bool JumpState();
     void Jump();
+    void ResetJump();
     void SetLeft();
     void SetRight();
     void SetUp();
@@ -158,7 +160,7 @@ private:
     uint32_t dead_timer = 70;
     bool inJump = false;
     double jumpHeight = -6.5;
-    double jumpTimer;
+    double jumpTimer = 0.0;
     double lastJump = 0.0;
     bool collision_point[8] = {true};
     Bullet *bullet = nullptr;

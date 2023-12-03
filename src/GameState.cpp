@@ -1,6 +1,5 @@
 
 #include "GameState.hpp"
-#include "DigitDisplay.hpp"
 
 void GameState::moveLeft()
 {
@@ -74,11 +73,6 @@ int GameState::getCurrentLevel()
     return currentLevel;
 }
 
-void GameState::SetRenderer(SDL_Renderer *renderer)
-{
-    this->renderer = renderer;
-}
-
 GameState *GameState::getInstance()
 {
     if (instance == nullptr)
@@ -88,16 +82,7 @@ GameState *GameState::getInstance()
     return instance;
 }
 
-GameState *GameState::getInstance(SDL_Renderer *renderer)
-{
-    if (instance == nullptr)
-    {
-        instance = new GameState(renderer);
-    }
-    return instance;
-}
-
-void GameState::addScore(int score)
+void GameState::AddScore(const int &score)
 {
     this->score += score;
 }
@@ -105,13 +90,8 @@ void GameState::addScore(int score)
 GameState::GameState()
 {
     this->player = new Player();
-}
-
-GameState::GameState(SDL_Renderer *renderer)
-{
-    this->renderer = renderer;
-    this->digitDisplay = new DigitDisplay(renderer);
-    this->player = new Player();
+    this->renderer = SDLApp::getInstance()->GetRenderer();
+    this->digitDisplay = new DigitDisplay();
 }
 
 void GameState::RenderStates()

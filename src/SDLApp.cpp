@@ -1,5 +1,3 @@
-#include <SDL.h>
-#include <iostream>
 #include "SDLApp.hpp"
 
 SDLApp::SDLApp()
@@ -8,6 +6,16 @@ SDLApp::SDLApp()
     if (Initialize() < 0)
         std::cout << "Could not initialize SDLApp" << std::endl;
 }
+
+SDLApp *SDLApp::getInstance()
+{
+    if (instance == nullptr)
+    {
+        instance = new SDLApp();
+    }
+    return instance;
+}
+
 int SDLApp::Initialize()
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -42,6 +50,7 @@ void SDLApp::SetRenderCallback(std::function<void(void)> func)
 {
     m_RenderCallback = func;
 }
+
 void SDLApp::Run()
 {
     SDL_Event event;
@@ -67,18 +76,20 @@ void SDLApp::Run()
 
 void SDLApp::Stop()
 {
-    isRunning = false;
+    this->isRunning = false;
 }
 
 SDL_Renderer *SDLApp::GetRenderer()
 {
-    return renderer;
+    return this->renderer;
 }
 
 SDLApp::~SDLApp()
 {
     IMG_Quit();
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
+    SDL_DestroyRenderer(this->renderer);
+    SDL_DestroyWindow(this->window);
     SDL_Quit();
 }
+
+SDLApp *SDLApp::instance = nullptr;

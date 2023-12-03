@@ -11,7 +11,7 @@ void LevelManager::RenderLevel(const int &levelIndex)
 
 void LevelManager::Initialize()
 {
-    if (!renderer)
+    if (!this->renderer)
     {
         SDL_Log("Renderer not set in LevelManager");
         return;
@@ -20,17 +20,15 @@ void LevelManager::Initialize()
     const int tileHeight = 16;
     for (int i = 0; i < m_Levels.size(); i++)
     {
-        m_Levels[i] = new Level(this->renderer);
+        m_Levels[i] = new Level();
         //  m_Levels[i]->CreateLevel();
     }
     // std::cout << "Created :" << m_Levels.size() << " levels" << std::endl;
     this->LoadLevels();
 
     int level = GameState::getInstance()->getCurrentLevel();
-    std::cout << "Level no: " << level << std::endl;
     int x = this->GetCurrentLevel()->GetPlayerStartX();
     int y = this->GetCurrentLevel()->GetPlayerStartY();
-    std::cout << "X: " << x << ' ' << "Y: " << y << std::endl;
     GameState::getInstance()->SetPlayerPos(x * 16, y * 16);
 }
 
@@ -137,13 +135,9 @@ LevelManager *LevelManager::getInstance()
     if (instance == nullptr)
     {
         instance = new LevelManager();
+        instance->Initialize();
     }
     return instance;
-}
-
-void LevelManager::SetRenderer(SDL_Renderer *renderer)
-{
-    this->renderer = renderer;
 }
 
 Level *LevelManager::getLevel(const int &index)
@@ -157,6 +151,7 @@ Level *LevelManager::getLevel(const int &index)
 
 LevelManager::LevelManager()
 {
+    this->renderer = SDLApp::getInstance()->GetRenderer();
     for (int i = 0; i < m_Levels.size(); i++)
     {
         m_Levels[i] = nullptr;

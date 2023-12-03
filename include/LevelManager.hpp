@@ -2,6 +2,7 @@
 
 #include <array>
 #include <SDL.h>
+#include "SDLApp.hpp"
 #include "Level.hpp"
 #include "TileManager.hpp"
 #include "tile_types.hpp"
@@ -14,7 +15,6 @@ public:
     void operator=(const LevelManager &) = delete;
     void Initialize();
     static LevelManager *getInstance();
-    void SetRenderer(SDL_Renderer *renderer);
     Level *getLevel(const int &index);
     void NextLevel();
     void ResetPlayerPos();
@@ -26,8 +26,9 @@ public:
 protected:
     static LevelManager *instance;
     LevelManager();
+    LevelManager(const LevelManager &) = delete;
 
 private:
     std::array<Level *, 10> m_Levels;
-    SDL_Renderer *renderer = nullptr;
+    const SDL_Renderer *renderer = nullptr;
 };

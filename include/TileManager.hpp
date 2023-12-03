@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <SDL_image.h>
+#include "SDLApp.hpp"
 
 class TileManager
 {
@@ -15,11 +16,10 @@ private:
     void LoadMiscObjects(SDL_Renderer *renderer, SDL_Texture *source, int &tile, Uint32 pixelFormat);
 
 protected:
-    TileManager(SDL_Renderer *renderer);
+    TileManager();
     static TileManager *instance;
 
 public:
-    static TileManager *getInstance(SDL_Renderer *renderer);
     static TileManager *getInstance();
     void LoadTiles();
     SDL_Texture *GetTileById(const int &id);
