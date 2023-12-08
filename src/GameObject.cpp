@@ -699,7 +699,7 @@ void Player::UpdateFrame()
         const int currOffset = LevelManager::getInstance()->GetCurrentOffset() / SCREENOFFSET::ONE;
         const int bullOffset = this->GetBulletRect()->x / SCREENOFFSET::ONE;
 
-        if ((this->GetBulletRect()->x < 0) || (this->GetBulletRect()->x > 16 * 99) || bullOffset != currOffset)
+        if ((this->GetBulletRect()->x < 0) || (this->GetBulletRect()->x > 17 * 99) || bullOffset != currOffset)
         {
             this->DestroyBullet();
         }
@@ -741,6 +741,14 @@ void Player::UpdateFrame()
     else
     {
         this->tileId = this->startTileId + (this->player_tick / 3) % 3;
+    }
+
+    if (GameState::getInstance()->jetpackState())
+    {
+        if ((GameState::getInstance()->GetTicks()) % 6 == 0)
+        {
+            GameState::getInstance()->ConsumeJetpack();
+        }
     }
 }
 

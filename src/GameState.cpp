@@ -52,6 +52,10 @@ Player *&GameState::GetPlayer()
 
 void GameState::toggleJetpack()
 {
+    if (this->jetpackFuel <= 0)
+    {
+        return;
+    }
     if (jetpackActivated)
     {
         this->player->ResetSpeed();
@@ -61,6 +65,19 @@ void GameState::toggleJetpack()
         this->player->IncreaseSpeed();
     }
     jetpackActivated = !jetpackActivated;
+}
+
+void GameState::ConsumeJetpack()
+{
+    if (this->jetpackFuel > 0)
+    {
+        --(this->jetpackFuel);
+    }
+    else
+    {
+        this->player->ResetSpeed();
+        this->jetpackActivated = false;
+    }
 }
 
 bool GameState::jetpackState()
@@ -89,6 +106,7 @@ void GameState::AddScore(const int &score)
 
 GameState::GameState()
 {
+    this->ticks = 0;
     this->player = new Player();
     this->renderer = SDLApp::getInstance()->GetRenderer();
     this->digitDisplay = new DigitDisplay();
@@ -143,6 +161,15 @@ void GameState::RenderStates()
         dst = {62 + 8, 185, 130, 12};
         SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
         SDL_RenderCopy(renderer, texture, NULL, &dst);
+
+        // Display jetpack units
+        texture = TileManager::getInstance()->GetTileById(MiscObject::JETPACK_UNIT);
+        for (int i = 0; i < jetpackFuel; i++)
+        {
+            dst = {74 + 2 * i, 189, 6, 4};
+            SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+            SDL_RenderCopy(renderer, texture, NULL, &dst);
+        }
     }
 
     // Display gun if accquired
@@ -232,6 +259,16 @@ void GameState::SetPlayerY(int y)
 void GameState::SetPlayerPos(int x, int y)
 {
     this->GetPlayer()->SetPlayerPos(x, y);
+}
+
+void GameState::Update()
+{
+    ++(this->ticks);
+}
+
+uint32_t GameState::GetTicks()
+{
+    return this->ticks;
 }
 
 GameState *GameState::instance = nullptr;

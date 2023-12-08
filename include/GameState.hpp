@@ -34,6 +34,9 @@ public:
     void SetPlayerY(int y);
     void SetPlayerPos(int x, int y);
     void DecreaseLives();
+    void ConsumeJetpack();
+    void Update();
+    uint32_t GetTicks();
 
 protected:
     static GameState *instance;
@@ -46,13 +49,16 @@ private:
 
     int lives = 3;
     int score = 0;
-    int currentLevel = 0;
+    int currentLevel = 2;
 
     bool gotJetpack = false;
     bool jetpackActivated = false;
+    int jetpackFuel = 60;
     bool gotTrophy = false;
     bool canClimb = false;
     bool gotGun = false;
+
+    uint32_t ticks;
 
     Player *player = nullptr;
     SDL_Renderer *renderer = nullptr;

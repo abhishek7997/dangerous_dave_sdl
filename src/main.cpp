@@ -21,6 +21,7 @@ void HandleRendering()
 
 void HandleUpdate()
 {
+    gameState->Update();
     Level *level = levelManager->GetCurrentLevel();
     if (!gameState->GetPlayer()->IsGrounded())
     {
