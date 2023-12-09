@@ -10,7 +10,7 @@ class DigitDisplay
 {
 public:
     DigitDisplay();
-    void RenderText(int x, int num);
+    void RenderText(const int &x, int num);
     SDL_Texture *GetDigitTexture(const int &digit);
 
 private:

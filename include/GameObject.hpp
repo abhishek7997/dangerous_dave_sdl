@@ -119,7 +119,6 @@ public:
     bool canMoveUp();
     bool canMoveLeft();
     bool canMoveRight();
-    bool canClimb();
     void PrintRectCoordinates();
     void IncreaseSpeed();
     void ResetSpeed();

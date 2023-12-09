@@ -30,5 +30,4 @@ protected:
 
 private:
     std::array<Level *, 10> m_Levels;
-    const SDL_Renderer *renderer = nullptr;
 };

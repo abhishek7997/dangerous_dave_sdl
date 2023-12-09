@@ -22,6 +22,7 @@ void IGameObject::Render(SDL_Renderer *renderer, const int &offset)
 
     SDL_RenderCopy(renderer, texture, NULL, &dst);
 
+    // Draw the bounding boxes of the texture
     // if (this->tileId != 0)
     // {
     //     SDL_SetRenderDrawColor(renderer, 0xaa, 0x0, 0xff, 0xff);
@@ -31,14 +32,14 @@ void IGameObject::Render(SDL_Renderer *renderer, const int &offset)
 
 void IGameObject::SetRectPosition(const int &x, const int &y)
 {
-    (this->rect).x = x;
-    (this->rect).y = y;
+    this->rect.x = x;
+    this->rect.y = y;
 };
 
 void IGameObject::SetRectDimension(const int &w, const int &h)
 {
-    (this->rect).w = w;
-    (this->rect).h = h;
+    this->rect.w = w;
+    this->rect.h = h;
 }
 
 int IGameObject::GetTileId()
@@ -155,9 +156,8 @@ MonsterObject::~MonsterObject()
 bool MonsterObject::InView()
 {
     const int playerOff = GameState::getInstance()->GetPlayer()->GetRectangle()->x / (20 * 16);
-    const int monsOff = (this->x / (20 * 16));
+    const int monsOff = this->x / (20 * 16);
 
-    // std::cout << "OFF:" << playerOff << ',' << monsOff << std::endl;
     return ((this->GetRectangle()->x >= 0) && (this->GetRectangle()->x <= SCREENOFFSET::FOUR) && playerOff == monsOff);
 }
 
