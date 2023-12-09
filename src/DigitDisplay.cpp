@@ -4,7 +4,7 @@ DigitDisplay::DigitDisplay()
 {
 }
 
-void DigitDisplay::RenderText(int x, int num)
+void DigitDisplay::RenderText(const int &x, int num)
 {
     SDL_Renderer *renderer = SDLApp::getInstance()->GetRenderer();
     if (num > 99999)

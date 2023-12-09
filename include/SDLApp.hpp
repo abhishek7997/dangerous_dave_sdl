@@ -27,7 +27,7 @@ private:
     bool isRunning = true;
     const int m_RenderScale = 3;
     const int m_WindowWidth = 960;
-    const int m_WindowHeight = 480 + 4 * 16 * m_RenderScale;
+    const int m_WindowHeight = 672;
     const int m_MaxFrameRate = 30;
     SDL_Window *window = nullptr;
     SDL_Renderer *renderer = nullptr;

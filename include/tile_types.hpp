@@ -224,9 +224,9 @@ enum SCREENOFFSET
 
 struct TileData
 {
-    int x = 0;
-    int y = 0;
-    int tileId = StaticObject::EMPTY;
+    int x;
+    int y;
+    int tileId;
     TileData() : x(0), y(0), tileId(StaticObject::EMPTY)
     {
     }

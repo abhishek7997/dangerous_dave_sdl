@@ -17,7 +17,7 @@ Level::Level()
         }
     }
 }
-void Level::CreateLevel(const std::vector<TileData> staticTiles, const std::vector<TileData> monsterObjects, const TileData player, const std::vector<std::pair<int, int>> movements)
+void Level::CreateLevel(const std::vector<TileData> &staticTiles, const std::vector<TileData> &monsterObjects, const TileData player, const std::vector<std::pair<int, int>> &movements)
 {
     if (!this->tileManager)
     {
@@ -91,7 +91,7 @@ SDL_Rect *Level::QueryCell(const int &x, const int &y)
     return m_Level[x][y]->GetRectangle();
 }
 
-void Level::SetPlayerStartingPosition(const int x, const int y)
+void Level::SetPlayerStartingPosition(const int &x, const int &y)
 {
     Player *player = GameState::getInstance()->GetPlayer();
     player->SetRectPosition(x, y);
@@ -107,7 +107,7 @@ int Level::GetOffset()
     return this->offset;
 }
 
-void Level::SetOffset(int o)
+void Level::SetOffset(const int &o)
 {
     this->offset = o;
 }

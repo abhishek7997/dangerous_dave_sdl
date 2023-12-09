@@ -11,11 +11,6 @@ void LevelManager::RenderLevel(const int &levelIndex)
 
 void LevelManager::Initialize()
 {
-    if (!this->renderer)
-    {
-        SDL_Log("Renderer not set in LevelManager");
-        return;
-    }
     const int tileWidth = 16;
     const int tileHeight = 16;
     for (int i = 0; i < m_Levels.size(); i++)
@@ -151,7 +146,6 @@ Level *LevelManager::getLevel(const int &index)
 
 LevelManager::LevelManager()
 {
-    this->renderer = SDLApp::getInstance()->GetRenderer();
     for (int i = 0; i < m_Levels.size(); i++)
     {
         m_Levels[i] = nullptr;
