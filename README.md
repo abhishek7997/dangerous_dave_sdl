@@ -8,9 +8,9 @@ This project is a single-player 2D platformer implemented in C++ using the SDL l
 - C++ version: C++ 11
 
 <br>
-<img src="https://github.com/abhishek7997/dangerous_dave_sdl/assets/68701271/4609af71-f687-4234-8a81-788a934c98e6" width=512>
+<img src="https://github.com/abhishek7997/dangerous_dave_sdl/assets/68701271/caf5b9f7-e420-4239-b3ad-391561f02d80" width=512>
 <br>
-<img src="https://github.com/abhishek7997/dangerous_dave_sdl/assets/68701271/8cc256ac-0e60-4818-aec8-7471bf2c5885" width=512>
+<img src="https://github.com/abhishek7997/dangerous_dave_sdl/assets/68701271/ec61b9d3-f70c-4512-a8f1-9dca5b01516e" width=512>
 
 ## Info
 
