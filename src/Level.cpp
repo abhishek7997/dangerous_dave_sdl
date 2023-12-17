@@ -1,30 +1,19 @@
 #include "Level.hpp"
 
-std::vector<TileData> levelTiles;
-
 Level::Level()
 {
-    this->renderer = SDLApp::getInstance()->GetRenderer();
-    this->tileManager = TileManager::getInstance();
-
     const int tileWidth = 16;
     const int tileHeight = 16;
     for (int i = 0; i < m_LevelHeight; i++)
     {
         for (int j = 0; j < m_LevelWidth; j++)
         {
-            m_Level[i][j] = new GameObject(i * tileHeight, j * tileWidth, StaticObject::EMPTY);
+            m_Level[i][j] = std::unique_ptr<GameObject>(new GameObject(i * tileHeight, j * tileWidth, StaticObject::EMPTY));
         }
     }
 }
-void Level::CreateLevel(const std::vector<TileData> &staticTiles, const std::vector<TileData> &monsterObjects, const TileData player, const std::vector<std::pair<int, int>> &movements)
+void Level::CreateLevel(const std::vector<TileData> &staticTiles, const std::vector<TileData> &monsterObjects, const TileData &player, const std::vector<std::pair<int, int>> &movements)
 {
-    if (!this->tileManager)
-    {
-        SDL_Log("TileManager not loaded in CreateLevel()\n");
-        return;
-    }
-    // static objects (walls)
     int tileWidth = 16;
     int tileHeight = 16;
 
@@ -33,7 +22,7 @@ void Level::CreateLevel(const std::vector<TileData> &staticTiles, const std::vec
     {
         i = tile.y;
         j = tile.x;
-        m_Level[i][j] = new GameObject(j * tileWidth, i * tileHeight, tile.tileId);
+        m_Level[i][j] = std::unique_ptr<GameObject>(new GameObject(j * tileWidth, i * tileHeight, tile.tileId));
     }
 
     for (const TileData &tile : monsterObjects)
@@ -59,7 +48,7 @@ void Level::RenderLevel()
         {
             if (m_Level[i][j])
             {
-                m_Level[i][j]->Render(this->renderer, this->offset);
+                m_Level[i][j]->Render(this->offset);
                 m_Level[i][j]->UpdateFrame(j);
             }
         }
@@ -77,8 +66,7 @@ void Level::RenderLevel()
         else
         {
             (*itr)->UpdateFrame();
-            (*itr)->Render(renderer, offset);
-            (*itr)->RenderBullet(renderer, offset);
+            (*itr)->Render(offset);
             ++itr;
         }
     }
@@ -88,18 +76,12 @@ SDL_Rect *Level::QueryCell(const int &x, const int &y)
 {
     if (x < 0 || x > m_LevelWidth || y < 0 || y > m_LevelHeight)
         return nullptr;
-    return m_Level[x][y]->GetRectangle();
+    return &m_Level[x][y]->GetRectangle();
 }
 
 void Level::SetPlayerStartingPosition(const int &x, const int &y)
 {
-    Player *player = GameState::getInstance()->GetPlayer();
-    player->SetRectPosition(x, y);
-}
-
-std::array<std::array<GameObject *, 100>, 10> &Level::GetLevel()
-{
-    return (this->m_Level);
+    GameState::Get().GetPlayer().get()->SetRectPosition(x, y);
 }
 
 int Level::GetOffset()
@@ -114,9 +96,13 @@ void Level::SetOffset(const int &o)
 
 void Level::ClearCell(const int &x, const int &y)
 {
-    if (x < 0 || x > 10 || y < 0 || y > 99)
+    if (x < 0 || x > 9 || y < 0 || y > 99)
+    {
         return;
-    this->m_Level[x][y]->SetTileId(StaticObject::EMPTY);
+    }
+    std::cout << "Clearing cell on " << x << ' ' << y << std::endl;
+    // this->m_Level[x][y]->SetTileId(StaticObject::EMPTY);
+    m_Level[x][y].reset();
 }
 
 int Level::GetPlayerStartX()
@@ -127,4 +113,11 @@ int Level::GetPlayerStartX()
 int Level::GetPlayerStartY()
 {
     return this->playerStartY;
+}
+
+int Level::GetTileId(const int &x, const int &y)
+{
+    if (this->m_Level[x][y] == nullptr)
+        return 0;
+    return this->m_Level[x][y]->GetTileId();
 }

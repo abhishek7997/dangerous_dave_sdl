@@ -11,13 +11,13 @@
 class IGameObject
 {
 public:
-    void Render(SDL_Renderer *renderer, const int &offset);
+    void Render(const int &offset);
     void SetRectPosition(const int &x, const int &y);
     void SetRectDimension(const int &w, const int &h);
     int GetTileId();
-    SDL_bool isColliding(const SDL_Rect *other);
-    SDL_Rect *GetRectangle();
-    void SetTileId(const int &tileId);
+    SDL_bool IsColliding(const SDL_Rect *other);
+    SDL_Rect &GetRectangle();
+    void SetTileId(const unsigned int &tileId);
 
 protected:
     SDL_Rect rect;
@@ -32,6 +32,7 @@ public:
     GameObject(const int &x, const int &y, const int &tileId);
     void SetPosition(const int &x, const int &y);
     void UpdateFrame(const int &salt);
+    ~GameObject();
 };
 
 class EnemyBullet : public IGameObject
@@ -40,41 +41,44 @@ public:
     EnemyBullet();
     EnemyBullet(const int &dir, const int x, const int y);
     void UpdateFrame(const int &m_ticks);
+    EnemyBullet &Get();
+    static void RenderBullets();
+    static void AddBullet(std::unique_ptr<EnemyBullet> b);
+    void CheckPlayerCollision();
 
 private:
     const int speed = 7;
-    int dx;
-    int dead_timer = 120;
     const int W = 20;
     const int H = 3;
+    int dx;
+    int dead_timer = 120;
+    static std::list<std::unique_ptr<EnemyBullet>> bullets;
+    static EnemyBullet instance;
 };
 
 class MonsterObject : public IGameObject
 {
 public:
     MonsterObject() = delete;
-    MonsterObject(const int x, const int y, const int tileId);
+    MonsterObject(const int x, const int y, const int &tileId);
     void Move();
     void SetMovements(const std::vector<std::pair<int, int>> movements);
     SDL_bool IsColliding();
     void UpdateFrame();
     void FireBullet();
-    void RenderBullet(SDL_Renderer *renderer, const int &offset);
-    std::list<EnemyBullet *>::iterator DestroyBullet(std::list<EnemyBullet *>::iterator it);
     bool InView();
     int GetDirection();
     ~MonsterObject();
 
 private:
-    std::vector<std::pair<int, int>> movements;
-    size_t size;
-    std::vector<std::pair<int, int>>::iterator iterator;
-    int startX = 0;
-    int startY = 0;
     int x;
     int y;
+    int startX = 0;
+    int startY = 0;
+    size_t size;
+    std::vector<std::pair<int, int>> movements;
+    std::vector<std::pair<int, int>>::iterator iterator;
     uint32_t m_ticks = 0;
-    std::list<EnemyBullet *> bullets;
     const unsigned int fireRate = 20; // Higher value means low fire rate
 };
 
@@ -102,7 +106,6 @@ public:
     void MoveUp();
     void MoveDown();
     bool IsGrounded();
-
     bool IsColliding(const int &x, const int &y);
     void IsColliding();
     void Gravity();
@@ -133,12 +136,12 @@ public:
     const SDL_Rect *GetBulletRect()
     {
         if (this->bullet != nullptr)
-            return (this->bullet)->GetRectangle();
+            return &(this->bullet)->GetRectangle();
         return nullptr;
     }
     void FireBullet();
-    void RenderBullet(SDL_Renderer *renderer, const int &offset);
-    const Bullet *GetBullet();
+    void RenderBullet(const int &offset);
+    ~Player();
 
 private:
     int x, y;
@@ -162,5 +165,5 @@ private:
     double jumpTimer = 0.0;
     double lastJump = 0.0;
     bool collision_point[8] = {true};
-    Bullet *bullet = nullptr;
+    std::unique_ptr<Bullet> bullet;
 };

@@ -1,9 +1,28 @@
-#include <SDL.h>
 #include "LevelManager.hpp"
 
-void LevelManager::RenderLevel(const int &levelIndex)
+LevelManager::LevelManager()
 {
-    if (levelIndex < 0 || levelIndex >= m_Levels.size())
+    this->Initialize();
+}
+
+LevelManager &LevelManager::Get()
+{
+    static LevelManager instance;
+    return instance;
+}
+
+Level *LevelManager::GetLevel(const unsigned int &levelIndex)
+{
+    if (levelIndex > 10)
+    {
+        return nullptr;
+    }
+    return m_Levels[levelIndex].get();
+}
+
+void LevelManager::RenderLevel(const unsigned int &levelIndex)
+{
+    if (levelIndex >= m_Levels.size())
         return;
 
     m_Levels[levelIndex]->RenderLevel();
@@ -15,21 +34,20 @@ void LevelManager::Initialize()
     const int tileHeight = 16;
     for (int i = 0; i < m_Levels.size(); i++)
     {
-        m_Levels[i] = new Level();
-        //  m_Levels[i]->CreateLevel();
+        m_Levels[i] = std::make_unique<Level>();
     }
-    // std::cout << "Created :" << m_Levels.size() << " levels" << std::endl;
+
     this->LoadLevels();
 
-    int level = GameState::getInstance()->getCurrentLevel();
+    int level = GameState::Get().getCurrentLevel();
     int x = this->GetCurrentLevel()->GetPlayerStartX();
     int y = this->GetCurrentLevel()->GetPlayerStartY();
-    GameState::getInstance()->SetPlayerPos(x * 16, y * 16);
+    GameState::Get().SetPlayerPos(x * 16, y * 16);
 }
 
 void LevelManager::LoadLevels()
 {
-    std::ifstream file("D:\\Dev\\GameProgramming\\dangerous_dave_sdl\\assets\\levels.txt");
+    std::ifstream file(m_LevelsFilePath);
     if (!file.is_open())
     {
         std::cerr << "Could not read level data" << std::endl;
@@ -125,45 +143,17 @@ void LevelManager::LoadLevels()
     this->ResetPlayerPos();
 }
 
-LevelManager *LevelManager::getInstance()
-{
-    if (instance == nullptr)
-    {
-        instance = new LevelManager();
-        instance->Initialize();
-    }
-    return instance;
-}
-
-Level *LevelManager::getLevel(const int &index)
-{
-    if (index < 0 || index > 10)
-    {
-        return nullptr;
-    }
-    return m_Levels[index];
-}
-
-LevelManager::LevelManager()
-{
-    for (int i = 0; i < m_Levels.size(); i++)
-    {
-        m_Levels[i] = nullptr;
-    }
-    // Initialize();
-}
-
 void LevelManager::NextLevel()
 {
-    GameState::getInstance()->Reset();
-    GameState::getInstance()->NextLevel();
+    GameState::Get().Reset();
+    GameState::Get().NextLevel();
 
-    const int idx = GameState::getInstance()->getCurrentLevel();
+    const int idx = GameState::Get().getCurrentLevel();
 
     const int x = m_Levels[idx]->GetPlayerStartX();
     const int y = m_Levels[idx]->GetPlayerStartY();
 
-    GameState::getInstance()->GetPlayer()->SetPlayerPos(x * 16, y * 16);
+    GameState::Get().GetPlayer()->SetPlayerPos(x * 16, y * 16);
 }
 
 void LevelManager::ResetPlayerPos()
@@ -171,23 +161,24 @@ void LevelManager::ResetPlayerPos()
     Level *level = this->GetCurrentLevel();
     const int x = level->GetPlayerStartX();
     const int y = level->GetPlayerStartY();
-    GameState::getInstance()->GetPlayer()->SetPlayerPos(x * 16, y * 16);
+    GameState::Get().GetPlayer()->SetPlayerPos(x * 16, y * 16);
 }
 
 void LevelManager::ResetOffset()
 {
-    int lvl = GameState::getInstance()->getCurrentLevel();
-    this->getLevel(lvl)->SetOffset(0);
+    this->GetCurrentLevel()->SetOffset(0);
 }
 
 Level *LevelManager::GetCurrentLevel()
 {
-    return this->getLevel(GameState::getInstance()->getCurrentLevel());
+    return this->m_Levels[GameState::Get().getCurrentLevel()].get();
 }
 
 int LevelManager::GetCurrentOffset()
 {
-    return this->getLevel(GameState::getInstance()->getCurrentLevel())->GetOffset();
+    return this->m_Levels[GameState::Get().getCurrentLevel()]->GetOffset();
 }
 
-LevelManager *LevelManager::instance = nullptr;
+LevelManager::~LevelManager()
+{
+}
