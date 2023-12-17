@@ -7,60 +7,55 @@
 class GameState
 {
 public:
-    void moveLeft();
-    void moveRight();
-    void moveDown();
-    void moveUp();
-    void applyGravity();
-    void jump();
-    void playerAnimation();
-    void SetPlayer(Player *player);
-    Player *&GetPlayer();
-    void toggleJetpack();
-    bool jetpackState();
+    static GameState &Get();
+    void ApplyGravity();
+    std::shared_ptr<Player> GetPlayer();
+    void ToggleJetpack();
+    bool IsJetpackActivated();
     int getCurrentLevel();
-    static GameState *getInstance();
     void AddScore(const int &score);
     void RenderStates();
-    void SetGotTrophy(bool);
-    void SetGotJetpack(bool);
-    void SetGotGun(bool);
+    void SetGotTrophy(const bool &status);
+    void SetGotJetpack(const bool &status);
+    void SetGotGun(const bool &status);
     bool GotTrophy();
     bool GotJetpack();
     bool GotGun();
     void Reset();
     void NextLevel();
-    void SetPlayerX(int x);
-    void SetPlayerY(int y);
-    void SetPlayerPos(int x, int y);
+    void SetPlayerX(const int &x);
+    void SetPlayerY(const int &y);
+    void SetPlayerPos(const int &x, const int &y);
     void DecreaseLives();
     void ConsumeJetpack();
     void Update();
-    uint32_t GetTicks();
-
-protected:
-    static GameState *instance;
-    GameState();
+    int GetCurrentLevelOffset();
+    unsigned int GetTicks();
+    ~GameState();
+    GameState(const GameState &) = delete;
+    // GameState &operator=(const GameState &) = delete;
 
 private:
+    GameState();
+
     const int playerWidth = 20;
     const int playerHeight = 16;
     const float gravity = 0.4f;
 
-    int lives = 3;
-    int score = 0;
-    int currentLevel = 0;
+    unsigned short lives = 3;
+    unsigned int score = 0;
+    unsigned short currentLevel = 2;
+    unsigned jetpackFuel = 60;
 
     bool gotJetpack = false;
     bool jetpackActivated = false;
-    int jetpackFuel = 60;
     bool gotTrophy = false;
     bool canClimb = false;
     bool gotGun = false;
 
-    uint32_t ticks;
+    unsigned int ticks;
 
-    Player *player = nullptr;
-    SDL_Renderer *renderer = nullptr;
-    DigitDisplay *digitDisplay = nullptr;
+    std::shared_ptr<Player> player;
+    std::shared_ptr<SDL_Renderer> renderer;
+    std::unique_ptr<DigitDisplay> digitDisplay;
 };

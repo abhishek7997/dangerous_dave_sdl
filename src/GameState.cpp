@@ -1,58 +1,36 @@
 
 #include "GameState.hpp"
 
-void GameState::moveLeft()
+GameState::GameState() : ticks(0), player(new Player()), renderer(SDLApp::Get().GetRenderer()), digitDisplay(new DigitDisplay())
 {
-    this->player->MoveLeft();
 }
 
-void GameState::moveRight()
+GameState &GameState::Get()
 {
-    this->player->MoveRight();
+    static GameState instance;
+    return instance;
 }
 
-void GameState::moveDown()
+void GameState::AddScore(const int &score)
 {
-    if (!this->jetpackActivated)
-        return;
-    this->player->MoveDown();
+    this->score += score;
 }
 
-void GameState::moveUp()
-{
-    this->player->MoveUp();
-}
-
-void GameState::applyGravity()
+void GameState::ApplyGravity()
 {
     if (jetpackActivated)
         return;
     this->player->Gravity();
 }
 
-void GameState::jump()
-{
-    if (this->player->IsGrounded() && this->player->canMoveUp())
-        this->player->Jump();
-}
-
-void GameState::playerAnimation()
-{
-}
-
-void GameState::SetPlayer(Player *player)
-{
-    this->player = player;
-}
-
-Player *&GameState::GetPlayer()
+std::shared_ptr<Player> GameState::GetPlayer()
 {
     return this->player;
 }
 
-void GameState::toggleJetpack()
+void GameState::ToggleJetpack()
 {
-    if (this->jetpackFuel <= 0)
+    if (this->jetpackFuel == 0)
     {
         return;
     }
@@ -69,7 +47,7 @@ void GameState::toggleJetpack()
 
 void GameState::ConsumeJetpack()
 {
-    if (this->jetpackFuel > 0)
+    if (this->jetpackFuel > 0 && !this->player->IsDead())
     {
         --(this->jetpackFuel);
     }
@@ -80,7 +58,7 @@ void GameState::ConsumeJetpack()
     }
 }
 
-bool GameState::jetpackState()
+bool GameState::IsJetpackActivated()
 {
     return jetpackActivated;
 }
@@ -90,123 +68,101 @@ int GameState::getCurrentLevel()
     return currentLevel;
 }
 
-GameState *GameState::getInstance()
-{
-    if (instance == nullptr)
-    {
-        instance = new GameState();
-    }
-    return instance;
-}
-
-void GameState::AddScore(const int &score)
-{
-    this->score += score;
-}
-
-GameState::GameState()
-{
-    this->ticks = 0;
-    this->player = new Player();
-    this->renderer = SDLApp::getInstance()->GetRenderer();
-    this->digitDisplay = new DigitDisplay();
-}
-
 void GameState::RenderStates()
 {
     // Display SCORES
-    SDL_Texture *texture = TileManager::getInstance()->GetTileById(MiscObject::TEXT_SCORE);
+    std::shared_ptr<SDL_Texture> texture = TileManager::Get().GetTileById(MiscObject::TEXT_SCORE);
     SDL_Rect dst = {0, 0, 62, 11};
-    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-    SDL_RenderCopy(renderer, texture, NULL, &dst);
+    SDL_SetTextureBlendMode(texture.get(), SDL_BLENDMODE_BLEND);
+    SDL_RenderCopy(renderer.get(), texture.get(), NULL, &dst);
 
     digitDisplay->RenderText(63, this->score);
 
     // Display Current level
-    texture = TileManager::getInstance()->GetTileById(MiscObject::TEXT_LEVEL);
+    texture = TileManager::Get().GetTileById(MiscObject::TEXT_LEVEL);
     int levelTextOffset = 62 + 5 * 8 + 8;
     dst = {levelTextOffset, 0, 62, 11};
-    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-    SDL_RenderCopy(renderer, texture, NULL, &dst);
+    SDL_SetTextureBlendMode(texture.get(), SDL_BLENDMODE_BLEND);
+    SDL_RenderCopy(renderer.get(), texture.get(), NULL, &dst);
 
     digitDisplay->RenderText(levelTextOffset + 62, this->currentLevel + 1);
 
     // Display number of lives left
-    texture = TileManager::getInstance()->GetTileById(MiscObject::TEXT_LIVES);
+    texture = TileManager::Get().GetTileById(MiscObject::TEXT_LIVES);
     int livesTextOffset = levelTextOffset + 62 + 8 * 3;
 
     dst = {livesTextOffset, 0, 62, 11};
 
-    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-    SDL_RenderCopy(renderer, texture, NULL, &dst);
+    SDL_SetTextureBlendMode(texture.get(), SDL_BLENDMODE_BLEND);
+    SDL_RenderCopy(renderer.get(), texture.get(), NULL, &dst);
 
     for (int i = 0; i < this->lives; i++)
     {
         dst = {livesTextOffset + 62 + i * 17, 0, 17, 12};
-        texture = TileManager::getInstance()->GetTileById(MiscObject::LIFE_UNIT);
-        SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-        SDL_RenderCopy(renderer, texture, NULL, &dst);
+        texture = TileManager::Get().GetTileById(MiscObject::LIFE_UNIT);
+        SDL_SetTextureBlendMode(texture.get(), SDL_BLENDMODE_BLEND);
+        SDL_RenderCopy(renderer.get(), texture.get(), NULL, &dst);
     }
 
     // Display jetpack
     if (gotJetpack)
     {
-        texture = TileManager::getInstance()->GetTileById(MiscObject::TEXT_JETPACK);
+        texture = TileManager::Get().GetTileById(MiscObject::TEXT_JETPACK);
         dst = {0, 185, 62, 11};
-        SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-        SDL_RenderCopy(renderer, texture, NULL, &dst);
+        SDL_SetTextureBlendMode(texture.get(), SDL_BLENDMODE_BLEND);
+        SDL_RenderCopy(renderer.get(), texture.get(), NULL, &dst);
 
         // Display jetpack meter
-        texture = TileManager::getInstance()->GetTileById(MiscObject::JETPACK_METER);
+        texture = TileManager::Get().GetTileById(MiscObject::JETPACK_METER);
         dst = {62 + 8, 185, 130, 12};
-        SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-        SDL_RenderCopy(renderer, texture, NULL, &dst);
+        SDL_SetTextureBlendMode(texture.get(), SDL_BLENDMODE_BLEND);
+        SDL_RenderCopy(renderer.get(), texture.get(), NULL, &dst);
 
         // Display jetpack units
-        texture = TileManager::getInstance()->GetTileById(MiscObject::JETPACK_UNIT);
+        texture = TileManager::Get().GetTileById(MiscObject::JETPACK_UNIT);
         for (int i = 0; i < jetpackFuel; i++)
         {
             dst = {74 + 2 * i, 189, 6, 4};
-            SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-            SDL_RenderCopy(renderer, texture, NULL, &dst);
+            SDL_SetTextureBlendMode(texture.get(), SDL_BLENDMODE_BLEND);
+            SDL_RenderCopy(renderer.get(), texture.get(), NULL, &dst);
         }
     }
 
     // Display gun if accquired
     if (gotGun)
     {
-        texture = TileManager::getInstance()->GetTileById(MiscObject::TEXT_GUN);
+        texture = TileManager::Get().GetTileById(MiscObject::TEXT_GUN);
         dst = {62 + 8 + 185, 185, 62, 11};
-        SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-        SDL_RenderCopy(renderer, texture, NULL, &dst);
+        SDL_SetTextureBlendMode(texture.get(), SDL_BLENDMODE_BLEND);
+        SDL_RenderCopy(renderer.get(), texture.get(), NULL, &dst);
 
-        texture = TileManager::getInstance()->GetTileById(StaticObject::GUN);
+        texture = TileManager::Get().GetTileById(StaticObject::GUN);
         dst = {62 + 8 + 185 + 62 + 8, 185, 62, 11};
-        SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-        SDL_RenderCopy(renderer, texture, NULL, &dst);
+        SDL_SetTextureBlendMode(texture.get(), SDL_BLENDMODE_BLEND);
+        SDL_RenderCopy(renderer.get(), texture.get(), NULL, &dst);
     }
 
     // Display Go thru the door text
     if (gotTrophy)
     {
-        texture = TileManager::getInstance()->GetTileById(MiscObject::TEXT_CANEXIT);
+        texture = TileManager::Get().GetTileById(MiscObject::TEXT_CANEXIT);
         dst = {62 + 8, 185 + 16, 176, 14};
-        SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-        SDL_RenderCopy(renderer, texture, NULL, &dst);
+        SDL_SetTextureBlendMode(texture.get(), SDL_BLENDMODE_BLEND);
+        SDL_RenderCopy(renderer.get(), texture.get(), NULL, &dst);
     }
 }
 
-void GameState::SetGotTrophy(bool status)
+void GameState::SetGotTrophy(const bool &status)
 {
     this->gotTrophy = status;
 }
 
-void GameState::SetGotJetpack(bool status)
+void GameState::SetGotJetpack(const bool &status)
 {
     this->gotJetpack = status;
 }
 
-void GameState::SetGotGun(bool status)
+void GameState::SetGotGun(const bool &status)
 {
     this->gotGun = status;
 }
@@ -238,7 +194,7 @@ void GameState::Reset()
 
 void GameState::DecreaseLives()
 {
-    this->lives--;
+    --(this->lives);
 }
 
 void GameState::NextLevel()
@@ -246,19 +202,19 @@ void GameState::NextLevel()
     this->currentLevel = std::min(9, this->currentLevel + 1);
 }
 
-void GameState::SetPlayerX(int x)
+void GameState::SetPlayerX(const int &x)
 {
-    this->GetPlayer()->SetPlayerX(x);
+    this->player->SetPlayerX(x);
 }
 
-void GameState::SetPlayerY(int y)
+void GameState::SetPlayerY(const int &y)
 {
-    this->GetPlayer()->SetPlayerY(y);
+    this->player->SetPlayerY(y);
 }
 
-void GameState::SetPlayerPos(int x, int y)
+void GameState::SetPlayerPos(const int &x, const int &y)
 {
-    this->GetPlayer()->SetPlayerPos(x, y);
+    this->player->SetPlayerPos(x, y);
 }
 
 void GameState::Update()
@@ -266,9 +222,11 @@ void GameState::Update()
     ++(this->ticks);
 }
 
-uint32_t GameState::GetTicks()
+unsigned int GameState::GetTicks()
 {
     return this->ticks;
 }
 
-GameState *GameState::instance = nullptr;
+GameState::~GameState()
+{
+}

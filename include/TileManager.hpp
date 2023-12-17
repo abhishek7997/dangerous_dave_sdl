@@ -14,21 +14,19 @@ private:
     void LoadPlayerObjects(SDL_Renderer *renderer, SDL_Texture *source, int &tile, Uint32 pixelFormat);
     void LoadMonsterObjects(SDL_Renderer *renderer, SDL_Texture *source, int &tile, Uint32 pixelFormat);
     void LoadMiscObjects(SDL_Renderer *renderer, SDL_Texture *source, int &tile, Uint32 pixelFormat);
-
-protected:
+    static TileManager instance;
     TileManager();
-    static TileManager *instance;
 
 public:
-    static TileManager *getInstance();
+    static TileManager &Get();
+    TileManager(const TileManager &) = delete;
     void LoadTiles();
-    SDL_Texture *GetTileById(const int &id);
+    std::shared_ptr<SDL_Texture> GetTileById(const unsigned int &id);
     ~TileManager();
 
 private:
     const std::string m_TilemapPath = "D:\\Dev\\GameProgramming\\dangerous_dave_sdl\\assets\\dd_tilesheet.bmp";
     const int m_TilemapWidth = 145;
     const int m_TilemapHeight = 110;
-    SDL_Renderer *renderer;
-    std::vector<SDL_Texture *> tiles;
+    std::array<std::shared_ptr<SDL_Texture>, 158> tiles;
 };

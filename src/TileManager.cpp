@@ -2,6 +2,22 @@
 #include <SDL.h>
 #include "TileManager.hpp"
 
+TileManager::TileManager()
+{
+    if (IMG_Init(IMG_INIT_PNG) < 0)
+    {
+        std::cerr << "Could not initialize SDL_Image: " << SDL_GetError() << '\n';
+        return;
+    }
+    this->LoadTiles();
+}
+
+TileManager &TileManager::Get()
+{
+    static TileManager instance;
+    return instance;
+}
+
 void TileManager::CopyTexture(SDL_Renderer *renderer, SDL_Texture *source, Uint32 &pixelFormat, const int &x, const int &y, const int &w, const int &h, int &tile)
 {
     SDL_Rect rect;
@@ -10,9 +26,9 @@ void TileManager::CopyTexture(SDL_Renderer *renderer, SDL_Texture *source, Uint3
     rect.w = w;
     rect.h = h;
 
-    tiles[tile] = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, w, h);
-    SDL_SetTextureBlendMode(tiles[tile], SDL_BLENDMODE_BLEND);
-    SDL_SetRenderTarget(renderer, tiles[tile++]);
+    tiles[tile] = std::shared_ptr<SDL_Texture>(SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, w, h), SDL_DestroyTexture);
+    SDL_SetTextureBlendMode(tiles[tile].get(), SDL_BLENDMODE_BLEND);
+    SDL_SetRenderTarget(renderer, tiles[tile++].get());
     SDL_RenderCopy(renderer, source, &rect, NULL);
 }
 
@@ -341,80 +357,50 @@ void TileManager::LoadMiscObjects(SDL_Renderer *renderer, SDL_Texture *source, i
     std::cout << "Tile count for LoadMiscObjects: " << tile << std::endl;
 }
 
-TileManager::TileManager()
-{
-    if (IMG_Init(IMG_INIT_PNG) < 0)
-    {
-        std::cout << "Could not initialize SDL_Image: " << SDL_GetError() << std::endl;
-    }
-
-    this->tiles = std::vector<SDL_Texture *>(158);
-    this->renderer = SDLApp::getInstance()->GetRenderer();
-}
-
-TileManager *TileManager::getInstance()
-{
-    if (instance == nullptr)
-    {
-        instance = new TileManager();
-        instance->LoadTiles();
-    }
-    return instance;
-}
-
 void TileManager::LoadTiles()
 {
-    if (!this->renderer)
-    {
-        SDL_Log("Renderer not set\n");
-        return;
-    }
-    SDL_Surface *surface = SDL_LoadBMP(m_TilemapPath.c_str());
+    std::shared_ptr<SDL_Renderer> renderer = SDLApp::Get().GetRenderer();
+    std::unique_ptr<SDL_Surface, decltype(&SDL_FreeSurface)> surface = std::unique_ptr<SDL_Surface, decltype(&SDL_FreeSurface)>(SDL_LoadBMP(m_TilemapPath.c_str()), SDL_FreeSurface);
+
     if (!surface)
     {
-        std::cout << "Tilemap not loaded" << std::endl;
+        std::cerr << "Tilemap not loaded\n";
         return;
     }
 
-    SDL_PixelFormat *pixelFormat = surface->format;
+    const SDL_PixelFormat *pixelFormat = surface.get()->format;
 
-    if (SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(pixelFormat, 0x00, 0x00, 0x00)) < 0)
+    if (SDL_SetColorKey(surface.get(), SDL_TRUE, SDL_MapRGB(pixelFormat, 0x00, 0x00, 0x00)) < 0)
     {
-        std::cout << "Could not set color key: " << SDL_GetError() << std::endl;
+        std::cerr << "Could not set color key: " << SDL_GetError() << '\n';
     }
 
-    SDL_Texture *m_TilemapTexture = SDL_CreateTextureFromSurface(renderer, surface);
-
-    SDL_FreeSurface(surface);
+    std::unique_ptr<SDL_Texture, decltype(&SDL_DestroyTexture)> m_TilemapTexture = std::unique_ptr<SDL_Texture, decltype(&SDL_DestroyTexture)>(SDL_CreateTextureFromSurface(renderer.get(), surface.get()), SDL_DestroyTexture);
 
     if (!m_TilemapTexture)
     {
-        std::cout << "Could not load texture: " << SDL_GetError() << std::endl;
+        std::cerr << "Could not load texture: " << SDL_GetError() << '\n';
         return;
     }
 
     int tile = 0;
 
-    LoadGameObjects(renderer, m_TilemapTexture, tile, pixelFormat->format);
-    LoadPlayerObjects(renderer, m_TilemapTexture, tile, pixelFormat->format);
-    LoadMonsterObjects(renderer, m_TilemapTexture, tile, pixelFormat->format);
-    LoadMiscObjects(renderer, m_TilemapTexture, tile, pixelFormat->format);
+    LoadGameObjects(renderer.get(), m_TilemapTexture.get(), tile, pixelFormat->format);
+    LoadPlayerObjects(renderer.get(), m_TilemapTexture.get(), tile, pixelFormat->format);
+    LoadMonsterObjects(renderer.get(), m_TilemapTexture.get(), tile, pixelFormat->format);
+    LoadMiscObjects(renderer.get(), m_TilemapTexture.get(), tile, pixelFormat->format);
 
-    SDL_SetRenderTarget(renderer, NULL);
+    SDL_SetRenderTarget(renderer.get(), NULL);
 
-    SDL_DestroyTexture(m_TilemapTexture);
-
-    std::cout
-        << "Final tile count: " << tile << std::endl;
+    std::cout << "Final tile count: " << tile << '\n';
 }
 
-SDL_Texture *TileManager::GetTileById(const int &id)
+std::shared_ptr<SDL_Texture> TileManager::GetTileById(const unsigned int &id)
 {
     return tiles[id];
 }
 
 TileManager::~TileManager()
 {
+    std::cout << "TileManager Destructor called" << std::endl;
 }
-
-TileManager *TileManager::instance = nullptr;
