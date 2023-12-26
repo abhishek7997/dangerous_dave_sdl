@@ -44,7 +44,7 @@ private:
 
     unsigned short lives = 3;
     unsigned int score = 0;
-    unsigned short currentLevel = 2;
+    unsigned short currentLevel = 0;
     unsigned jetpackFuel = 60;
 
     bool gotJetpack = false;
